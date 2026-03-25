@@ -1,1 +1,4 @@
-export { environment } from '../environment/environment.development';
+export const environment = {
+  production: false,
+  apiUrl: 'https://pig-league-api.onrender.com',
+};
