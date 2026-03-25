@@ -1,0 +1,112 @@
+<section class="matches-page">
+  <header class="matches-hero">
+    <div class="container matches-hero__content">
+      <p class="matches-hero__eyebrow">MATCHES</p>
+      <h1 class="matches-hero__title">JOGOS</h1>
+    </div>
+  </header>
+
+  <section class="container matches-content py-4">
+    <div class="matches-toolbar">
+
+      <div class="matches-toolbar__filters" role="group" aria-label="Filtros de grupo">
+        @for (filtro of filtros; track filtro.value) {
+          <button
+            type="button"
+            class="btn matches-toolbar__filter"
+            [class.is-active]="isFiltroAtivo(filtro.value)"
+            (click)="selecionarFiltro(filtro.value)"
+            [attr.data-testid]="filtro.testId"
+          >
+            {{ filtro.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <article class="matches-card">
+      <header class="matches-card__head">
+        <span>DATA</span>
+        <span>HORARIO</span>
+        <span>JOGO</span>
+      </header>
+
+      @if (carregando()) {
+        <div class="matches-feedback" data-testid="loading-state">
+          Carregando partidas...
+        </div>
+      } @else if (erro(); as mensagemErro) {
+        <div
+          class="matches-feedback matches-feedback--error"
+          data-testid="error-state"
+          role="alert"
+          aria-live="assertive"
+        >
+          <span class="matches-feedback__icon" aria-hidden="true">!</span>
+          <div class="matches-feedback__content">
+            <p class="matches-feedback__title">Falha ao carregar partidas</p>
+            <p class="matches-feedback__message">{{ mensagemErro }}</p>
+          </div>
+          <button
+            type="button"
+            class="btn matches-feedback__retry"
+            (click)="tentarNovamente()"
+            data-testid="retry-load-button"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      } @else if (partidas().length === 0) {
+        <div class="matches-feedback" data-testid="empty-state">
+          Nenhuma partida encontrada para este filtro.
+        </div>
+      } @else {
+        <div class="matches-list">
+          @for (partida of partidas(); track partida.mandante + partida.visitante + $index) {
+            <article class="match-row" [class.match-row--canceled]="isCancelada(partida.status)">
+              <div class="match-row__date" data-testid="match-date">
+                {{ formatarData(partida.dataHora) }}
+              </div>
+
+              <div
+                class="match-row__time"
+                [class.match-row__time--status]="isNaoAgendada(partida.status)"
+                data-testid="match-time"
+              >
+                @if (isNaoAgendada(partida.status)) {
+                  Nao agendado
+                } @else {
+                  {{ formatarHorario(partida.dataHora) }}
+                }
+              </div>
+
+              <div class="match-row__game">
+                <div class="team">
+                  <span class="team__name">{{ partida.mandante }}</span>
+                  <span class="team__tag">{{ teamTag(partida.mandante) }}</span>
+                </div>
+
+                <div class="score">
+                  <span class="score__value">{{ placarMandante(partida) }}</span>
+                  <span class="score__versus">VS</span>
+                  <span class="score__value">{{ placarVisitante(partida) }}</span>
+                </div>
+
+                <div class="team team--away">
+                  <span class="team__tag">{{ teamTag(partida.visitante) }}</span>
+                  <span class="team__name">{{ partida.visitante }}</span>
+                </div>
+              </div>
+
+              @if (isCancelada(partida.status)) {
+                <div class="status status--canceled" data-testid="match-status-canceled">
+                  Cancelado
+                </div>
+              }
+            </article>
+          }
+        </div>
+      }
+    </article>
+  </section>
+</section>

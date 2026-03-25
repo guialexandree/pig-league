@@ -1,0 +1,76 @@
+<section class="players-page">
+  <header class="players-hero">
+    <div class="container players-hero__content">
+      <p class="players-hero__eyebrow">SQUAD INTEL</p>
+      <h1 class="players-hero__title">JOGADORES</h1>
+      @if (atualizadoEmFormatado(); as atualizadoEm) {
+        <p class="players-hero__updated">Atualizado em {{ atualizadoEm }}</p>
+      }
+    </div>
+  </header>
+
+  <section class="container py-4">
+    @if (carregando()) {
+      <div class="players-feedback" data-testid="loading-state">Carregando jogadores...</div>
+    } @else if (erro(); as mensagemErro) {
+      <div class="players-feedback players-feedback--error" data-testid="error-state" role="alert">
+        <span class="players-feedback__icon" aria-hidden="true">!</span>
+        <div class="players-feedback__content">
+          <p class="players-feedback__title">Falha ao carregar jogadores</p>
+          <p class="players-feedback__message">{{ mensagemErro }}</p>
+        </div>
+        <button
+          type="button"
+          class="btn players-feedback__retry"
+          (click)="tentarNovamente()"
+          data-testid="retry-load-button"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (jogadores().length === 0) {
+      <div class="players-feedback" data-testid="empty-state">
+        Nenhum jogador encontrado para montar os cards.
+      </div>
+    } @else {
+      <div class="players-grid">
+        @for (jogador of jogadores(); track jogador.id; let index = $index) {
+          <article
+            class="player-card"
+            [class.player-card--featured]="index === 0"
+            [attr.data-testid]="'player-card-' + jogador.id"
+          >
+            <span class="player-card__rank">#{{ index + 1 }}</span>
+
+            <header class="player-card__header">
+              <h2 class="player-card__name">{{ jogador.nome }}</h2>
+              <p class="player-card__subtitle">Tactical Card</p>
+            </header>
+
+            <div class="player-card__stats">
+              <div class="win-gauge" [style.--pl-win-angle]="toWinAngle(jogador.percentualVitoria)">
+                <span class="win-gauge__value">{{ formatPercentual(jogador.percentualVitoria) }}</span>
+                <span class="win-gauge__caption">VITORIA</span>
+              </div>
+
+              <ul class="metric-chips">
+                <li class="metric-chip">
+                  <span>Gols</span>
+                  <strong>{{ jogador.gols }}</strong>
+                </li>
+                <li class="metric-chip">
+                  <span>Partidas</span>
+                  <strong>{{ jogador.partidas }}</strong>
+                </li>
+                <li class="metric-chip">
+                  <span>Vitorias</span>
+                  <strong>{{ jogador.vitorias }}</strong>
+                </li>
+              </ul>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</section>

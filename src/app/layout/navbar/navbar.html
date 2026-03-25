@@ -1,0 +1,26 @@
+<nav class="site-nav sticky-top">
+  <div class="site-nav__main">
+    <div class="container site-nav__main-inner">
+      <a class="brand" routerLink="/partidas">
+        <img class="brand__crest" src="icons/android-chrome-192x192.png" alt="Pig League" />
+        <span class="brand__text">Pig League</span>
+      </a>
+
+      <ul class="menu">
+        @for (item of menu; track item.route) {
+          <li>
+            <a
+              class="menu__link"
+              data-testid="menu-item"
+              routerLinkActive="active"
+              [routerLink]="item.route"
+            >
+              {{ item.label }}
+            </a>
+          </li>
+        }
+      </ul>
+      <span></span>
+    </div>
+  </div>
+</nav>

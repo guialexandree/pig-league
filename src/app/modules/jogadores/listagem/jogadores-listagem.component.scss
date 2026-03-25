@@ -1,0 +1,295 @@
+.players-page {
+  color: var(--pl-text-primary);
+}
+
+.players-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  background:
+    repeating-linear-gradient(
+      138deg,
+      rgb(255 176 0 / 0%) 0 160px,
+      rgb(255 176 0 / 20%) 160px 230px,
+      rgb(255 176 0 / 0%) 230px 360px
+    ),
+    radial-gradient(circle at 12% 20%, rgb(255 140 0 / 18%), transparent 52%),
+    linear-gradient(164deg, #060607 0%, #0d0f12 48%, #070708 100%);
+  border-bottom: 1px solid rgb(255 176 0 / 24%);
+}
+
+.players-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 3.5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.players-hero::after {
+  content: '';
+  position: absolute;
+  inset: auto -8% -42px;
+  height: 120px;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0%), rgb(0 0 0 / 52%));
+  transform: skewY(-2deg);
+}
+
+.players-hero__content {
+  position: relative;
+  z-index: 1;
+}
+
+.players-hero__eyebrow {
+  margin: 0;
+  color: rgb(255 207 130 / 80%);
+  font-size: 0.78rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.players-hero__title {
+  margin: 0.4rem 0 0;
+  font-family: 'Oxanium', sans-serif;
+  font-size: clamp(2.7rem, 8vw, 5.6rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: #ffb406;
+  text-shadow: 0 0 24px rgb(255 170 0 / 35%);
+}
+
+.players-hero__updated {
+  margin-top: 0.9rem;
+  margin-bottom: 0;
+  color: rgb(225 229 236 / 74%);
+  font-size: 0.9rem;
+}
+
+.players-feedback {
+  border-radius: 0.95rem;
+  border: 1px solid rgb(255 255 255 / 10%);
+  background: linear-gradient(150deg, rgb(20 22 26 / 90%), rgb(11 12 15 / 90%));
+  padding: 1rem 1.1rem;
+  color: rgb(225 230 236 / 82%);
+}
+
+.players-feedback--error {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.9rem;
+  color: rgb(255 218 218 / 90%);
+  background:
+    radial-gradient(circle at 10% 50%, rgb(255 116 116 / 16%), transparent 45%),
+    linear-gradient(110deg, rgb(63 22 24 / 40%), rgb(27 15 18 / 38%));
+}
+
+.players-feedback__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgb(255 168 168 / 64%);
+  background: rgb(255 112 112 / 20%);
+  color: #ffd1d1;
+  font-family: 'Oxanium', sans-serif;
+  font-weight: 700;
+}
+
+.players-feedback__title,
+.players-feedback__message {
+  margin: 0;
+}
+
+.players-feedback__title {
+  font-weight: 700;
+}
+
+.players-feedback__message {
+  margin-top: 0.15rem;
+  color: rgb(255 205 205 / 84%);
+}
+
+.players-feedback__retry {
+  border-radius: 999px;
+  border: 1px solid rgb(255 186 0 / 68%);
+  color: #ffd477;
+  font-weight: 700;
+  background: rgb(255 186 0 / 11%);
+  padding: 0.4rem 0.92rem;
+}
+
+.players-feedback__retry:hover {
+  color: #1f1100;
+  background: #ffb900;
+}
+
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.player-card {
+  position: relative;
+  grid-column: span 4;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 280px;
+  padding: 1.1rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 10%);
+  background:
+    linear-gradient(150deg, rgb(26 29 34 / 88%), rgb(14 16 19 / 88%) 58%, rgb(10 11 14 / 90%)),
+    linear-gradient(130deg, rgb(255 176 0 / 6%), rgb(255 176 0 / 0%));
+  box-shadow: 0 22px 44px rgb(0 0 0 / 46%);
+  overflow: hidden;
+}
+
+.player-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(125deg, rgb(255 176 0 / 0%) 52%, rgb(255 176 0 / 9%) 56%, rgb(255 176 0 / 0%) 62%),
+    linear-gradient(305deg, rgb(255 255 255 / 0%) 52%, rgb(255 255 255 / 5%) 56%, rgb(255 255 255 / 0%) 62%);
+  pointer-events: none;
+}
+
+.player-card--featured {
+  grid-column: span 6;
+  min-height: 320px;
+}
+
+.player-card__rank {
+  position: absolute;
+  right: 1rem;
+  top: 0.8rem;
+  font-family: 'Oxanium', sans-serif;
+  font-size: 1.18rem;
+  color: rgb(255 186 0 / 62%);
+}
+
+.player-card__header {
+  position: relative;
+  z-index: 1;
+}
+
+.player-card__name {
+  margin: 0;
+  font-family: 'Oxanium', sans-serif;
+  font-size: clamp(1.24rem, 2.4vw, 1.74rem);
+  letter-spacing: 0.02em;
+  color: #f4f6fb;
+}
+
+.player-card__subtitle {
+  margin: 0.34rem 0 0;
+  color: rgb(255 197 88 / 82%);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+}
+
+.player-card__stats {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.95rem;
+  align-items: center;
+}
+
+.win-gauge {
+  --pl-win-angle: 0deg;
+  width: 112px;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 10%);
+  background:
+    radial-gradient(circle at center, rgb(13 15 19) 58%, transparent 59%),
+    conic-gradient(#ffb400 0 var(--pl-win-angle), rgb(255 255 255 / 12%) var(--pl-win-angle) 360deg);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  text-align: center;
+}
+
+.win-gauge__value {
+  font-family: 'Oxanium', sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #ffe4a0;
+}
+
+.win-gauge__caption {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: rgb(223 227 235 / 70%);
+}
+
+.metric-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.metric-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgb(255 255 255 / 9%);
+  padding: 0.48rem 0.6rem;
+  background: rgb(255 255 255 / 3%);
+}
+
+.metric-chip span {
+  color: rgb(216 223 232 / 72%);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.67rem;
+}
+
+.metric-chip strong {
+  font-family: 'Oxanium', sans-serif;
+  font-size: 1rem;
+  color: #ffbf2d;
+}
+
+@media (max-width: 1199.98px) {
+  .player-card,
+  .player-card--featured {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .players-feedback--error {
+    grid-template-columns: 1fr;
+  }
+
+  .player-card,
+  .player-card--featured {
+    grid-column: span 12;
+    min-height: auto;
+  }
+
+  .player-card__stats {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+}

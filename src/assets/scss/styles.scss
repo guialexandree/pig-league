@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+:root {
+  --pl-bg-0: #060607;
+  --pl-bg-1: #0f1114;
+  --pl-bg-2: #1a1d22;
+  --pl-accent: #ffb000;
+  --pl-accent-soft: rgb(255 176 0 / 18%);
+  --pl-text-primary: #eef1f5;
+  --pl-text-secondary: rgb(238 241 245 / 68%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--pl-text-primary);
+  background:
+    radial-gradient(circle at 12% -10%, rgb(255 176 0 / 16%), transparent 45%),
+    radial-gradient(circle at 100% 10%, rgb(255 111 0 / 10%), transparent 40%),
+    linear-gradient(165deg, var(--pl-bg-0), var(--pl-bg-1) 45%, var(--pl-bg-0) 100%);
+}
