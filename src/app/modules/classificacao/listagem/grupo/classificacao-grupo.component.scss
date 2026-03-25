@@ -48,7 +48,7 @@
   gap: 0.8rem;
   padding: 0.85rem 1rem;
   color: rgb(214 219 228 / 60%);
-  font-size: 0.76rem;
+  font-size: 0.88rem;
   letter-spacing: 0.06em;
   font-weight: 700;
   border-bottom: 1px solid rgb(255 255 255 / 8%);
@@ -127,11 +127,15 @@
   bottom: 0.16rem;
   width: 4px;
   border-radius: 999px;
-  background: #b794ff;
+  background: rgb(255 255 255 / 28%);
 }
 
-.classification-row--leader::before {
+.classification-row--classified::before {
   background: #9cff26;
+}
+
+.classification-row--eliminated::before {
+  background: #ff5a5f;
 }
 
 .classification-row__position {
@@ -162,6 +166,13 @@
   flex-shrink: 0;
 }
 
+.team-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
 .team-name {
   font-size: 1.03rem;
   font-weight: 700;
@@ -171,11 +182,65 @@
   white-space: nowrap;
 }
 
+.team-phase {
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.team-phase--classified {
+  color: #f1ffe0;
+  border-color: rgb(156 255 38 / 50%);
+  background: rgb(156 255 38 / 18%);
+}
+
+.team-phase--eliminated {
+  color: #ffdede;
+  border-color: rgb(255 118 118 / 48%);
+  background: rgb(255 118 118 / 18%);
+}
+
 .classification-row__metric {
   color: rgb(232 235 241 / 92%);
   font-weight: 700;
   justify-self: end;
   text-align: right;
+}
+
+.classification-card__legend {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.72rem 1rem 0.85rem;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  color: rgb(225 230 235 / 90%);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.classification-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.classification-legend__indicator {
+  width: 4px;
+  height: 1.25rem;
+  border-radius: 999px;
+}
+
+.classification-legend__indicator--playoffs {
+  background: #9cff26;
+}
+
+.classification-legend__indicator--eliminated {
+  background: #ff5a5f;
 }
 
 @media (max-width: 991.98px) {
@@ -187,12 +252,17 @@
     grid-template-columns: 72px minmax(0, 1fr) repeat(4, 62px);
     gap: 0.4rem;
     padding-inline: 0.7rem;
-    font-size: 0.66rem;
+    font-size: 0.76rem;
   }
 
   .classification-row {
     grid-template-columns: 72px minmax(0, 1fr) repeat(4, 62px);
     gap: 0.4rem;
+    padding-inline: 0.7rem;
+  }
+
+  .classification-card__legend {
+    font-size: 0.82rem;
     padding-inline: 0.7rem;
   }
 

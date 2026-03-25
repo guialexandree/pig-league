@@ -1,0 +1,145 @@
+.phase-step {
+  position: relative;
+  margin: 0 0 1.5rem;
+  padding: 1rem 1.15rem 1.2rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 10%);
+  background:
+    radial-gradient(circle at 8% 0%, rgb(160 112 255 / 20%), transparent 38%),
+    linear-gradient(145deg, rgb(21 23 27 / 95%), rgb(12 13 16 / 96%));
+  box-shadow:
+    0 18px 44px rgb(0 0 0 / 38%),
+    0 0 0 1px rgb(255 255 255 / 5%) inset;
+  animation: phase-step-reveal 320ms ease-out both;
+}
+
+.phase-step__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.phase-step__label {
+  margin: 0;
+  color: rgb(214 219 228 / 70%);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.phase-step__value {
+  color: rgb(247 242 255 / 96%);
+  font-family: 'Oxanium', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.phase-step__track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.phase-step__line {
+  position: absolute;
+  top: 16px;
+  left: calc(25% + 10px);
+  right: calc(25% + 10px);
+  height: 2px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 12%);
+  overflow: hidden;
+}
+
+.phase-step__line-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #b895ff, #9cff26);
+  transition: width 260ms ease;
+}
+
+.phase-step__line-fill.is-playoffs {
+  width: 100%;
+}
+
+.phase-step__node {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: rgb(216 220 229 / 76%);
+}
+
+.phase-step__dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  border: 2px solid rgb(255 255 255 / 36%);
+  background: rgb(14 15 18 / 90%);
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
+}
+
+.phase-step__title {
+  font-weight: 700;
+  font-size: 0.84rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.phase-step__node.is-active {
+  color: rgb(248 250 255 / 98%);
+}
+
+.phase-step__node.is-active .phase-step__dot {
+  border-color: #a075ff;
+  background: #a075ff;
+  box-shadow: 0 0 0 6px rgb(160 117 255 / 18%);
+}
+
+.phase-step__node.is-complete .phase-step__dot {
+  border-color: #9cff26;
+  background: #9cff26;
+  box-shadow: 0 0 0 6px rgb(156 255 38 / 16%);
+}
+
+.phase-step__node.is-upcoming .phase-step__dot {
+  border-color: rgb(255 255 255 / 22%);
+}
+
+@keyframes phase-step-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767.98px) {
+  .phase-step {
+    padding: 0.9rem 0.9rem 1rem;
+  }
+
+  .phase-step__title {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  .phase-step__line {
+    left: calc(25% + 9px);
+    right: calc(25% + 9px);
+  }
+}

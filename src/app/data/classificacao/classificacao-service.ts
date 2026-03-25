@@ -13,15 +13,24 @@ export class ClassificacaoService {
   private readonly http = inject(HttpClient);
 
   getClassificacao(filters?: LoadClassificacaoFiltersDto): Observable<GetClassificacaoDto[]> {
-    const params =
-      filters?.grupoId === undefined
-        ? undefined
-        : new HttpParams({
-            fromObject: {
-              grupoId: String(filters.grupoId),
-            },
-          });
-
+    const params = this.toParams(filters);
     return this.http.get<GetClassificacaoDto[]>(this.path, { params });
+  }
+
+  getClassificacaoGeral(filters?: LoadClassificacaoFiltersDto): Observable<GetClassificacaoDto[]> {
+    const params = this.toParams(filters);
+    return this.http.get<GetClassificacaoDto[]>(`${this.path}/geral`, { params });
+  }
+
+  private toParams(filters?: LoadClassificacaoFiltersDto): HttpParams | undefined {
+    if (filters?.grupoId === undefined) {
+      return undefined;
+    }
+
+    return new HttpParams({
+      fromObject: {
+        grupoId: String(filters.grupoId),
+      },
+    });
   }
 }

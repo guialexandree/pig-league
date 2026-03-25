@@ -1,0 +1,34 @@
+<section class="phase-step" data-testid="fase-step-root">
+  <header class="phase-step__header">
+    <p class="phase-step__label">FASE ATUAL</p>
+    <strong class="phase-step__value" data-testid="fase-step-current-label">
+      {{ isPlayoffsAtivo() ? 'PLAYOFFS' : 'FASE DE GRUPOS' }}
+    </strong>
+  </header>
+
+  <div class="phase-step__track" aria-label="Progresso da competicao">
+    <span class="phase-step__line" aria-hidden="true">
+      <span class="phase-step__line-fill" [class.is-playoffs]="isPlayoffsAtivo()"></span>
+    </span>
+
+    <article
+      class="phase-step__node"
+      data-testid="fase-step-grupos"
+      [class.is-active]="isFaseGruposAtiva()"
+      [class.is-complete]="isPlayoffsAtivo()"
+    >
+      <span class="phase-step__dot"></span>
+      <span class="phase-step__title">Fase de Grupos</span>
+    </article>
+
+    <article
+      class="phase-step__node"
+      data-testid="fase-step-playoffs"
+      [class.is-active]="isPlayoffsAtivo()"
+      [class.is-upcoming]="isFaseGruposAtiva()"
+    >
+      <span class="phase-step__dot"></span>
+      <span class="phase-step__title">Playoffs</span>
+    </article>
+  </div>
+</section>

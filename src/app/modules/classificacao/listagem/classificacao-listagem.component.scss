@@ -7,39 +7,19 @@
   position: relative;
 }
 
+.classification-layout__step-container {
+  position: relative;
+  z-index: 1;
+}
+
 .classification-layout__container {
   position: relative;
   z-index: 1;
   padding-inline: clamp(1rem, 3vw, 2.8rem);
 }
 
-.classification-layout__phase {
-  width: fit-content;
-  margin: 0 0 1.2rem;
-  padding: 0.48rem 0.9rem;
-  border-radius: 999px;
-  border: 1px solid rgb(170 122 255 / 44%);
-  color: rgb(237 225 255 / 95%);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  background:
-    linear-gradient(110deg, rgb(164 102 255 / 30%), rgb(125 69 209 / 12%) 62%),
-    rgb(13 14 18 / 92%);
-  box-shadow:
-    0 0 0 1px rgb(255 255 255 / 6%) inset,
-    0 10px 28px rgb(113 62 196 / 24%);
-}
-
 @media (max-width: 575.98px) {
   .classification-layout__container {
     padding-inline: 0.9rem;
-  }
-
-  .classification-layout__phase {
-    margin-bottom: 0.95rem;
-    font-size: 0.74rem;
-    letter-spacing: 0.11em;
   }
 }

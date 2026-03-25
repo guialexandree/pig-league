@@ -2,7 +2,7 @@
   <app-listagem-header
     eyebrow="MATCHES"
     title="JOGOS"
-    [showLogo]="false"
+    [showLogo]="true"
     testIdPrefix="matches"
   />
 
@@ -81,7 +81,17 @@
               <div class="match-row__game">
                 <div class="team">
                   <span class="team__name">{{ partida.mandante }}</span>
-                  <span class="team__tag">{{ teamTag(partida.mandante) }}</span>
+                  <span class="team__tag">
+                    <img
+                      class="team__placeholder-image"
+                      src="/assets/img/player-empty.png"
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span class="team__tag-text">{{ teamTag(partida.mandante) }}</span>
+                  </span>
                 </div>
 
                 <div class="score">
@@ -91,7 +101,17 @@
                 </div>
 
                 <div class="team team--away">
-                  <span class="team__tag">{{ teamTag(partida.visitante) }}</span>
+                  <span class="team__tag">
+                    <img
+                      class="team__placeholder-image"
+                      src="/assets/img/player-empty.png"
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span class="team__tag-text">{{ teamTag(partida.visitante) }}</span>
+                  </span>
                   <span class="team__name">{{ partida.visitante }}</span>
                 </div>
               </div>

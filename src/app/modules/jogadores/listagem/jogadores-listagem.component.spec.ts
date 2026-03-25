@@ -44,6 +44,25 @@ describe(JogadoresListagemComponent.name, () => {
     expect(root.querySelector(`[data-testid="player-stats-band-${jogador.id}"]`)).not.toBeNull();
   });
 
+  it('deve usar container fluido para a listagem de jogadores', () => {
+    const payload = createPayload();
+    const serviceMock = createServiceMock(payload);
+
+    TestBed.configureTestingModule({
+      imports: [JogadoresListagemComponent],
+      providers: [{ provide: JogadorService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(JogadoresListagemComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const layoutContainer = root.querySelector('[data-testid="players-list-container"]');
+
+    expect(layoutContainer).not.toBeNull();
+    expect(layoutContainer?.classList.contains('container-fluid')).toBe(true);
+  });
+
   it('deve aplicar as classes base do visual retrato gamer', () => {
     const payload = createPayload();
     const serviceMock = createServiceMock(payload);
@@ -88,6 +107,28 @@ describe(JogadoresListagemComponent.name, () => {
 
     expect(media?.getAttribute('aria-label')).toBe(`Retrato de ${jogador.nome}`);
     expect(initialsNode?.textContent?.trim()).toBe(getExpectedInitials(jogador.nome));
+  });
+
+  it('deve exibir imagem padrao de jogador quando nao houver foto', () => {
+    const payload = createPayload();
+    const serviceMock = createServiceMock(payload);
+
+    TestBed.configureTestingModule({
+      imports: [JogadoresListagemComponent],
+      providers: [{ provide: JogadorService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(JogadoresListagemComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const jogador = payload.jogadores[0];
+    const fallbackImage = root.querySelector(
+      `[data-testid="player-placeholder-image-${jogador.id}"]`,
+    ) as HTMLImageElement | null;
+
+    expect(fallbackImage).not.toBeNull();
+    expect(fallbackImage?.getAttribute('src')).toBe('/assets/img/player-empty.png');
   });
 
   it('deve exibir os dados de gols, partidas e vitorias no card', () => {

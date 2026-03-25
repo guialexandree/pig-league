@@ -13,9 +13,9 @@
       <span>SG</span>
     </header>
 
-    @if (carregando()) {
+    @if (carregando) {
       <div class="classification-feedback" data-testid="loading-state">Carregando classificacao...</div>
-    } @else if (erro(); as mensagemErro) {
+    } @else if (erro; as mensagemErro) {
       <div
         class="classification-feedback classification-feedback--error"
         data-testid="error-state"
@@ -25,25 +25,41 @@
         <button
           type="button"
           class="btn classification-feedback__retry"
-          (click)="tentarNovamente()"
+          (click)="onRecarregar()"
           data-testid="retry-load-button"
         >
           Tentar novamente
         </button>
       </div>
-    } @else if (classificacao().length === 0) {
+    } @else if (classificacao.length === 0) {
       <div class="classification-feedback" data-testid="empty-state">
-        Nenhum registro de classificacao para o filtro selecionado.
+        Nenhum registro de classificacao disponivel.
       </div>
     } @else {
       <div class="classification-list">
-        @for (item of classificacao(); track item.jogador + item.posicao + $index) {
-          <article class="classification-row" [class.classification-row--leader]="item.posicao === 1">
+        @for (item of classificacao; track item.jogador + item.posicao + $index) {
+          <article
+            class="classification-row"
+            [class.classification-row--classified]="isClassificado(item.statusFase)"
+            [class.classification-row--eliminated]="!isClassificado(item.statusFase)"
+          >
             <div class="classification-row__position">#{{ item.posicao }}</div>
 
             <div class="classification-row__team">
               <span class="team-badge">{{ teamTag(item.jogador) }}</span>
-              <span class="team-name">{{ item.jogador }}</span>
+              <div class="team-meta">
+                <span class="team-name">{{ item.jogador }}</span>
+                @if (mostrarStatusFase()) {
+                  <span
+                    class="team-phase"
+                    [class.team-phase--classified]="isClassificado(item.statusFase)"
+                    [class.team-phase--eliminated]="!isClassificado(item.statusFase)"
+                    data-testid="phase-status"
+                  >
+                    {{ statusFaseLabel(item.statusFase) }}
+                  </span>
+                }
+              </div>
             </div>
 
             <div class="classification-row__metric" data-testid="record">
@@ -56,5 +72,16 @@
         }
       </div>
     }
+
+    <footer class="classification-card__legend" data-testid="classification-legend">
+      <span class="classification-legend__item">
+        <span class="classification-legend__indicator classification-legend__indicator--playoffs"></span>
+        Playoffs
+      </span>
+      <span class="classification-legend__item">
+        <span class="classification-legend__indicator classification-legend__indicator--eliminated"></span>
+        Desclassificado
+      </span>
+    </footer>
   </article>
 </section>

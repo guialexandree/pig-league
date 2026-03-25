@@ -4,6 +4,7 @@ import { faker } from '@faker-js/faker';
 import { NEVER, of } from 'rxjs';
 import { ClassificacaoService } from '../../../data/classificacao/classificacao-service';
 import { GetClassificacaoDto } from '../../../data/classificacao/dto/get-classificacao.dto';
+import { ClassificacaoFaseStepComponent } from './fase-step/classificacao-fase-step.component';
 import { ClassificacaoGrupoComponent } from './grupo/classificacao-grupo.component';
 import { ClassificacaoListagemComponent } from './classificacao-listagem.component';
 
@@ -12,10 +13,10 @@ describe(ClassificacaoListagemComponent.name, () => {
     faker.seed(20260325);
   });
 
-  it('deve renderizar grupo 1, grupo 2 e geral com filtros iniciais corretos', () => {
-    const serviceMock = createServiceMock();
+  it('deve renderizar grupo 1, grupo 2 e resultado geral', () => {
+    const classificacaoServiceMock = createClassificacaoServiceMock();
 
-    configureModule(serviceMock);
+    configureModule(classificacaoServiceMock);
 
     const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
     fixture.detectChanges();
@@ -24,34 +25,61 @@ describe(ClassificacaoListagemComponent.name, () => {
 
     expect(grupos.length).toBe(3);
     expect((grupos[0].componentInstance as ClassificacaoGrupoComponent).tituloGrupo).toBe('GRUPO 1');
-    expect((grupos[0].componentInstance as ClassificacaoGrupoComponent).filtroInicial).toBe(1);
     expect((grupos[1].componentInstance as ClassificacaoGrupoComponent).tituloGrupo).toBe('GRUPO 2');
-    expect((grupos[1].componentInstance as ClassificacaoGrupoComponent).filtroInicial).toBe(2);
-    expect((grupos[2].componentInstance as ClassificacaoGrupoComponent).tituloGrupo).toBe('RESULTADO GERAL');
-    expect((grupos[2].componentInstance as ClassificacaoGrupoComponent).filtroInicial).toBe('GERAL');
+    expect((grupos[2].componentInstance as ClassificacaoGrupoComponent).tituloGrupo).toBe(
+      'RESULTADO GERAL FASE DE GRUPOS',
+    );
   });
 
-  it('deve exibir fase regular uma unica vez na listagem', () => {
-    const serviceMock = createServiceMock();
+  it('deve buscar classificacao geral apenas uma vez ao carregar a tela', () => {
+    const classificacaoServiceMock = createClassificacaoServiceMock();
 
-    configureModule(serviceMock);
+    configureModule(classificacaoServiceMock);
 
     const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
     fixture.detectChanges();
 
-    const root = fixture.nativeElement as HTMLElement;
-    const phaseLabels = root.querySelectorAll('[data-testid="phase-label"]');
-
-    expect(phaseLabels.length).toBe(1);
-    expect(phaseLabels[0]?.textContent?.trim()).toBe('Fase Regular');
+    expect(classificacaoServiceMock.getClassificacaoGeral).toHaveBeenCalledTimes(1);
   });
 
-  it('deve exibir loader de tela enquanto houver grupos carregando', () => {
-    const serviceMock: Pick<ClassificacaoService, 'getClassificacao'> = {
-      getClassificacao: vi.fn().mockReturnValue(NEVER),
+  it('deve exibir o step com fase de grupos quando a etapa ainda nao estiver concluida', () => {
+    const classificacaoServiceMock = createClassificacaoServiceMock(
+      createClassificacaoPayload(1),
+    );
+
+    configureModule(classificacaoServiceMock);
+
+    const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
+    fixture.detectChanges();
+
+    const step = fixture.debugElement.query(By.directive(ClassificacaoFaseStepComponent))
+      .componentInstance as ClassificacaoFaseStepComponent;
+
+    expect(step.faseAtual).toBe('FASE_DE_GRUPOS');
+  });
+
+  it('deve exibir o step com playoffs quando todos os grupos estiverem finalizados', () => {
+    const classificacaoServiceMock = createClassificacaoServiceMock(
+      createClassificacaoPayload(2),
+    );
+
+    configureModule(classificacaoServiceMock);
+
+    const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
+    fixture.detectChanges();
+
+    const step = fixture.debugElement.query(By.directive(ClassificacaoFaseStepComponent))
+      .componentInstance as ClassificacaoFaseStepComponent;
+
+    expect(step.faseAtual).toBe('PLAYOFFS');
+  });
+
+  it('deve exibir loader de tela enquanto houver carregamento', () => {
+    const classificacaoServiceMock: Pick<ClassificacaoService, 'getClassificacaoGeral'> = {
+      getClassificacaoGeral: vi.fn().mockReturnValue(NEVER),
     };
 
-    configureModule(serviceMock);
+    configureModule(classificacaoServiceMock);
 
     const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
     fixture.detectChanges();
@@ -59,84 +87,53 @@ describe(ClassificacaoListagemComponent.name, () => {
     const root = fixture.nativeElement as HTMLElement;
 
     expect(root.querySelector('[data-testid="classification-screen-loader"]')).not.toBeNull();
-    expect(serviceMock.getClassificacao).toHaveBeenCalledTimes(3);
-    expect(
-      (root.querySelector('[data-testid="classification-loader-logo"]') as HTMLImageElement | null)?.getAttribute(
-        'src',
-      ),
-    ).toBe('/assets/img/logo.png');
-  });
-
-  it('deve aplicar fallback de logo no loader quando houver erro de carregamento da imagem', () => {
-    const serviceMock: Pick<ClassificacaoService, 'getClassificacao'> = {
-      getClassificacao: vi.fn().mockReturnValue(NEVER),
-    };
-
-    configureModule(serviceMock);
-
-    const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
-    fixture.detectChanges();
-
-    const root = fixture.nativeElement as HTMLElement;
-    const logo = root.querySelector('[data-testid="classification-loader-logo"]') as HTMLImageElement | null;
-
-    expect(logo?.getAttribute('src')).toBe('/assets/img/logo.png');
-
-    logo?.dispatchEvent(new Event('error'));
-    fixture.detectChanges();
-    expect(logo?.getAttribute('src')).toBe('assets/img/logo.png');
-
-    logo?.dispatchEvent(new Event('error'));
-    fixture.detectChanges();
-    expect(logo?.getAttribute('src')).toBe('/browser/assets/img/logo.png');
-  });
-
-  it('deve ocultar loader de tela quando todos os grupos terminarem o carregamento', () => {
-    const serviceMock = createServiceMock();
-
-    configureModule(serviceMock);
-
-    const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
-    fixture.detectChanges();
-
-    const root = fixture.nativeElement as HTMLElement;
-
-    expect(root.querySelector('[data-testid="classification-screen-loader"]')).toBeNull();
   });
 });
 
 function configureModule(
-  serviceMock: Pick<ClassificacaoService, 'getClassificacao'>,
+  classificacaoServiceMock: Pick<ClassificacaoService, 'getClassificacaoGeral'>,
 ): void {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [ClassificacaoListagemComponent],
-    providers: [{ provide: ClassificacaoService, useValue: serviceMock }],
+    providers: [{ provide: ClassificacaoService, useValue: classificacaoServiceMock }],
   });
 }
 
-function createServiceMock(
-  payload: GetClassificacaoDto[] = createPayload(),
-): Pick<ClassificacaoService, 'getClassificacao'> {
+function createClassificacaoServiceMock(
+  payload: GetClassificacaoDto[] = createClassificacaoPayload(),
+): Pick<ClassificacaoService, 'getClassificacaoGeral'> {
   return {
-    getClassificacao: vi.fn().mockReturnValue(of(payload)),
+    getClassificacaoGeral: vi.fn().mockReturnValue(of(payload)),
   };
 }
 
-function createPayload(): GetClassificacaoDto[] {
+function createClassificacaoPayload(jogosPorJogador = 1): GetClassificacaoDto[] {
   return [
-    {
-      grupo: 'GERAL',
-      posicao: 1,
-      jogador: faker.person.fullName(),
-      jogos: 1,
-      vitorias: 1,
-      empates: 0,
-      derrotas: 0,
-      golsPositivo: 2,
-      golsContra: 0,
-      saldoGols: 2,
-      pontos: 3,
-    },
+    createClassificacaoItem({ grupo: 'GRUPO 1', posicao: 1, jogos: jogosPorJogador }),
+    createClassificacaoItem({ grupo: 'GRUPO 1', posicao: 2, jogos: jogosPorJogador }),
+    createClassificacaoItem({ grupo: 'GRUPO 1', posicao: 3, jogos: jogosPorJogador }),
+    createClassificacaoItem({ grupo: 'GRUPO 2', posicao: 1, jogos: jogosPorJogador }),
+    createClassificacaoItem({ grupo: 'GRUPO 2', posicao: 2, jogos: jogosPorJogador }),
+    createClassificacaoItem({ grupo: 'GRUPO 2', posicao: 3, jogos: jogosPorJogador }),
   ];
+}
+
+function createClassificacaoItem(
+  overrides: Partial<GetClassificacaoDto> = {},
+): GetClassificacaoDto {
+  return {
+    grupo: 'GRUPO 1',
+    posicao: 1,
+    jogador: faker.person.fullName(),
+    jogos: faker.number.int({ min: 1, max: 4 }),
+    vitorias: faker.number.int({ min: 0, max: 4 }),
+    empates: faker.number.int({ min: 0, max: 4 }),
+    derrotas: faker.number.int({ min: 0, max: 4 }),
+    golsPositivo: faker.number.int({ min: 0, max: 20 }),
+    golsContra: faker.number.int({ min: 0, max: 20 }),
+    saldoGols: faker.number.int({ min: -20, max: 20 }),
+    pontos: faker.number.int({ min: 0, max: 12 }),
+    ...overrides,
+  };
 }

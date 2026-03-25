@@ -1,51 +1,22 @@
-import {
-  Component,
-  effect,
-  EventEmitter,
-  inject,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
-import { ClassificacaoGrupoService } from './classificacao-grupo.service';
-import { ClassificacaoGrupoFiltro } from './classificacao-grupo.types';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ClassificacaoStatusFaseEnum } from '../../../../data/classificacao/dto/classificacao-status-fase.enum';
+import { GetClassificacaoDto } from '../../../../data/classificacao/dto/get-classificacao.dto';
+import { ClassificacaoFaseAtual } from '../classificacao-fase-atual.type';
 
 @Component({
   selector: 'app-classificacao-grupo',
   standalone: true,
   templateUrl: './classificacao-grupo.component.html',
   styleUrl: './classificacao-grupo.component.scss',
-  providers: [ClassificacaoGrupoService],
 })
-export class ClassificacaoGrupoComponent implements OnChanges {
-  private readonly classificacaoGrupoService = inject(ClassificacaoGrupoService);
-  private filtroCarregado: ClassificacaoGrupoFiltro | null = null;
-
+export class ClassificacaoGrupoComponent {
   @Input({ required: true }) tituloGrupo = '';
-  @Input({ required: true }) filtroInicial: ClassificacaoGrupoFiltro = 'GERAL';
+  @Input({ required: true }) classificacao: GetClassificacaoDto[] = [];
+  @Input({ required: true }) carregando = false;
+  @Input() faseAtual: ClassificacaoFaseAtual = 'FASE_DE_GRUPOS';
+  @Input() erro: string | null = null;
 
-  @Output() readonly carregandoChange = new EventEmitter<boolean>();
-
-  readonly carregando = this.classificacaoGrupoService.carregando;
-  readonly erro = this.classificacaoGrupoService.erro;
-  readonly classificacao = this.classificacaoGrupoService.classificacao;
-
-  constructor() {
-    effect(() => {
-      this.carregandoChange.emit(this.carregando());
-    });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if ('filtroInicial' in changes) {
-      this.carregarClassificacaoInicial();
-    }
-  }
-
-  tentarNovamente(): void {
-    this.classificacaoGrupoService.tentarNovamente();
-  }
+  @Output() readonly recarregar = new EventEmitter<void>();
 
   recordLabel(vitorias: number, derrotas: number): string {
     return `${vitorias} - ${derrotas}`;
@@ -62,12 +33,21 @@ export class ClassificacaoGrupoComponent implements OnChanges {
     return letters || 'PL';
   }
 
-  private carregarClassificacaoInicial(): void {
-    if (this.filtroCarregado === this.filtroInicial) {
-      return;
-    }
+  statusFaseLabel(statusFase?: ClassificacaoStatusFaseEnum): string {
+    return statusFase === ClassificacaoStatusFaseEnum.DESCLASSIFICADO
+      ? 'Desclassificado'
+      : 'Classificado';
+  }
 
-    this.filtroCarregado = this.filtroInicial;
-    this.classificacaoGrupoService.carregarClassificacao(this.filtroInicial);
+  isClassificado(statusFase?: ClassificacaoStatusFaseEnum): boolean {
+    return statusFase !== ClassificacaoStatusFaseEnum.DESCLASSIFICADO;
+  }
+
+  mostrarStatusFase(): boolean {
+    return this.faseAtual === 'PLAYOFFS';
+  }
+
+  onRecarregar(): void {
+    this.recarregar.emit();
   }
 }

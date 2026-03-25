@@ -54,7 +54,9 @@ describe(ClassificacaoService.name, () => {
       actual = payload;
     });
 
-    const req = httpMock.expectOne('/campeonato/classificacao');
+    const req = httpMock.expectOne(
+      (request) => request.url.endsWith('/campeonato/classificacao'),
+    );
     expect(req.request.method).toBe('GET');
     expect(req.request.params.keys().length).toBe(0);
     req.flush(response);
@@ -69,7 +71,40 @@ describe(ClassificacaoService.name, () => {
     service.getClassificacao({ grupoId }).subscribe();
 
     const req = httpMock.expectOne(
-      (request) => request.url === '/campeonato/classificacao',
+      (request) => request.url.endsWith('/campeonato/classificacao'),
+    );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('grupoId')).toBe(String(grupoId));
+    req.flush(response);
+  });
+
+  it('deve buscar classificacao geral em /campeonato/classificacao/geral', () => {
+    const response: GetClassificacaoDto[] = [];
+
+    let actual: GetClassificacaoDto[] | undefined;
+
+    service.getClassificacaoGeral().subscribe((payload) => {
+      actual = payload;
+    });
+
+    const req = httpMock.expectOne(
+      (request) => request.url.endsWith('/campeonato/classificacao/geral'),
+    );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.keys().length).toBe(0);
+    req.flush(response);
+
+    expect(actual).toEqual(response);
+  });
+
+  it('deve serializar grupoId na classificacao geral quando filtro for informado', () => {
+    const grupoId = faker.number.int({ min: 1, max: 2 });
+    const response: GetClassificacaoDto[] = [];
+
+    service.getClassificacaoGeral({ grupoId }).subscribe();
+
+    const req = httpMock.expectOne(
+      (request) => request.url.endsWith('/campeonato/classificacao/geral'),
     );
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('grupoId')).toBe(String(grupoId));

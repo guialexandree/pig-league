@@ -2,43 +2,56 @@
   <app-listagem-header
     eyebrow="RANKING"
     title="CLASSIFICAÇÃO"
-    [showLogo]="false"
+    [showLogo]="true"
     testIdPrefix="classification"
   />
 
   <app-screen-loader
-    [visible]="carregandoTela()"
+    [visible]="service.carregando()"
     message="Carregando classificacoes..."
     testIdPrefix="classification"
   />
 
   <section class="classification-layout py-4">
-    <div class="container-fluid classification-layout__container">
-      <p class="classification-layout__phase" data-testid="phase-label">Fase Regular</p>
+    <div class="container classification-layout__step-container">
+      <app-classificacao-fase-step [faseAtual]="service.faseAtual()" />
+    </div>
 
+    <div class="container-fluid classification-layout__container">
       <div class="row g-4">
         <div class="col-12 col-xl-6">
           <app-classificacao-grupo
             [tituloGrupo]="'GRUPO 1'"
-            [filtroInicial]="1"
-            (carregandoChange)="atualizarCarregamento('grupo1', $event)"
+            [classificacao]="service.classificacaoGrupo1()"
+            [carregando]="service.carregando()"
+            [faseAtual]="service.faseAtual()"
+            [erro]="service.erro()"
+            (recarregar)="tentarNovamente()"
           />
         </div>
 
         <div class="col-12 col-xl-6">
           <app-classificacao-grupo
             [tituloGrupo]="'GRUPO 2'"
-            [filtroInicial]="2"
-            (carregandoChange)="atualizarCarregamento('grupo2', $event)"
+            [classificacao]="service.classificacaoGrupo2()"
+            [carregando]="service.carregando()"
+            [faseAtual]="service.faseAtual()"
+            [erro]="service.erro()"
+            (recarregar)="tentarNovamente()"
           />
         </div>
 
         <div class="col-12">
-          <app-classificacao-grupo
-            [tituloGrupo]="'RESULTADO GERAL'"
-            [filtroInicial]="'GERAL'"
-            (carregandoChange)="atualizarCarregamento('geral', $event)"
-          />
+          <div class="container">
+            <app-classificacao-grupo
+              [tituloGrupo]="'RESULTADO GERAL FASE DE GRUPOS'"
+              [classificacao]="service.classificacaoGeral()"
+              [carregando]="service.carregando()"
+              [faseAtual]="service.faseAtual()"
+              [erro]="service.erro()"
+              (recarregar)="tentarNovamente()"
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { faker } from '@faker-js/faker';
-import { of, throwError } from 'rxjs';
-import { ClassificacaoService } from '../../../../data/classificacao/classificacao-service';
+import { ClassificacaoStatusFaseEnum } from '../../../../data/classificacao/dto/classificacao-status-fase.enum';
 import { GetClassificacaoDto } from '../../../../data/classificacao/dto/get-classificacao.dto';
 import { ClassificacaoGrupoComponent } from './classificacao-grupo.component';
 
@@ -10,87 +9,81 @@ describe(ClassificacaoGrupoComponent.name, () => {
     faker.seed(20260325);
   });
 
-  it('deve carregar classificacao usando filtro inicial informado', () => {
-    const serviceMock = createServiceMock();
-
-    configureModule(serviceMock);
+  it('deve renderizar o titulo e os itens recebidos via input sem label de fase fora dos playoffs', () => {
+    TestBed.configureTestingModule({
+      imports: [ClassificacaoGrupoComponent],
+    });
 
     const fixture = TestBed.createComponent(ClassificacaoGrupoComponent);
     fixture.componentRef.setInput('tituloGrupo', 'GRUPO 1');
-    fixture.componentRef.setInput('filtroInicial', 1);
-    fixture.detectChanges();
-
-    expect(serviceMock.getClassificacao).toHaveBeenCalledTimes(1);
-    expect(serviceMock.getClassificacao).toHaveBeenCalledWith({ grupoId: 1 });
-  });
-
-  it('deve renderizar o titulo do grupo', () => {
-    const serviceMock = createServiceMock();
-
-    configureModule(serviceMock);
-
-    const fixture = TestBed.createComponent(ClassificacaoGrupoComponent);
-    fixture.componentRef.setInput('tituloGrupo', 'GERAL');
-    fixture.componentRef.setInput('filtroInicial', 'GERAL');
+    fixture.componentRef.setInput('carregando', false);
+    fixture.componentRef.setInput('classificacao', createPayload());
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
 
-    expect(root.querySelector('[data-testid="group-title"]')?.textContent?.trim()).toBe('GERAL');
+    expect(root.querySelector('[data-testid="group-title"]')?.textContent?.trim()).toBe('GRUPO 1');
+    expect(root.querySelectorAll('.classification-row').length).toBe(1);
+    expect(root.querySelector('[data-testid="phase-status"]')).toBeNull();
+    expect(root.querySelector('[data-testid="classification-legend"]')?.textContent).toContain('Playoffs');
+    expect(root.querySelector('[data-testid="classification-legend"]')?.textContent).toContain(
+      'Desclassificado',
+    );
   });
 
-  it('deve permitir tentar novamente quando ocorrer erro', () => {
-    const payload = createPayload();
-    const serviceMock: Pick<ClassificacaoService, 'getClassificacao'> = {
-      getClassificacao: vi
-        .fn()
-        .mockReturnValueOnce(throwError(() => new Error('falha de rede')))
-        .mockReturnValueOnce(of(payload)),
-    };
-
-    configureModule(serviceMock);
+  it('deve exibir label de fase e classes de borda quando a fase estiver em playoffs', () => {
+    TestBed.configureTestingModule({
+      imports: [ClassificacaoGrupoComponent],
+    });
 
     const fixture = TestBed.createComponent(ClassificacaoGrupoComponent);
+    fixture.componentRef.setInput('tituloGrupo', 'GRUPO 1');
+    fixture.componentRef.setInput('carregando', false);
+    fixture.componentRef.setInput('faseAtual', 'PLAYOFFS');
+    fixture.componentRef.setInput('classificacao', createPayloadPlayoffs());
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const rows = root.querySelectorAll('.classification-row');
+
+    expect(root.querySelectorAll('[data-testid="phase-status"]').length).toBe(2);
+    expect(root.querySelector('[data-testid="phase-status"]')?.textContent?.trim()).toBe('Classificado');
+    expect(rows[0].classList.contains('classification-row--classified')).toBe(true);
+    expect(rows[1].classList.contains('classification-row--eliminated')).toBe(true);
+  });
+
+  it('deve emitir recarregar quando clicar em tentar novamente', () => {
+    TestBed.configureTestingModule({
+      imports: [ClassificacaoGrupoComponent],
+    });
+
+    const fixture = TestBed.createComponent(ClassificacaoGrupoComponent);
+    const component = fixture.componentInstance;
+    const recarregarSpy = vi.fn();
+
+    component.recarregar.subscribe(recarregarSpy);
+
     fixture.componentRef.setInput('tituloGrupo', 'GRUPO 2');
-    fixture.componentRef.setInput('filtroInicial', 2);
+    fixture.componentRef.setInput('carregando', false);
+    fixture.componentRef.setInput('classificacao', []);
+    fixture.componentRef.setInput('erro', 'Erro de teste');
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
     const retryButton = root.querySelector('[data-testid="retry-load-button"]') as HTMLButtonElement;
 
-    expect(root.querySelector('[data-testid="error-state"]')).not.toBeNull();
-
     retryButton.click();
-    fixture.detectChanges();
 
-    expect(serviceMock.getClassificacao).toHaveBeenCalledTimes(2);
-    expect(root.querySelector('[data-testid="error-state"]')).toBeNull();
+    expect(recarregarSpy).toHaveBeenCalledTimes(1);
   });
 });
-
-function configureModule(
-  serviceMock: Pick<ClassificacaoService, 'getClassificacao'>,
-): void {
-  TestBed.resetTestingModule();
-  TestBed.configureTestingModule({
-    imports: [ClassificacaoGrupoComponent],
-    providers: [{ provide: ClassificacaoService, useValue: serviceMock }],
-  });
-}
-
-function createServiceMock(
-  payload: GetClassificacaoDto[] = createPayload(),
-): Pick<ClassificacaoService, 'getClassificacao'> {
-  return {
-    getClassificacao: vi.fn().mockReturnValue(of(payload)),
-  };
-}
 
 function createPayload(): GetClassificacaoDto[] {
   return [
     {
       grupo: 'GRUPO 1',
       posicao: 1,
+      statusFase: ClassificacaoStatusFaseEnum.CLASSIFICADO,
       jogador: faker.person.fullName(),
       jogos: 3,
       vitorias: 3,
@@ -100,6 +93,23 @@ function createPayload(): GetClassificacaoDto[] {
       golsContra: 9,
       saldoGols: 17,
       pontos: 9,
+    },
+  ];
+}
+
+function createPayloadPlayoffs(): GetClassificacaoDto[] {
+  const [base] = createPayload();
+
+  return [
+    {
+      ...base,
+      statusFase: ClassificacaoStatusFaseEnum.CLASSIFICADO,
+    },
+    {
+      ...base,
+      posicao: 2,
+      jogador: faker.person.fullName(),
+      statusFase: ClassificacaoStatusFaseEnum.DESCLASSIFICADO,
     },
   ];
 }
