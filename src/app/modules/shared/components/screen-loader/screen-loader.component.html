@@ -1,0 +1,20 @@
+@if (visible) {
+  <div
+    class="pl-screen-loader"
+    [attr.data-testid]="testIdPrefix + '-screen-loader'"
+    aria-live="polite"
+    aria-busy="true"
+  >
+    @if (showLogo) {
+      <img
+        [src]="logoSrc"
+        [alt]="logoAlt"
+        class="pl-screen-loader__logo"
+        [attr.data-testid]="testIdPrefix + '-loader-logo'"
+        (error)="onLogoError($event)"
+      />
+    }
+
+    <p class="pl-screen-loader__label" [attr.data-testid]="testIdPrefix + '-loader-label'">{{ message }}</p>
+  </div>
+}

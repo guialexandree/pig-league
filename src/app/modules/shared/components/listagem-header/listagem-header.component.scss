@@ -1,0 +1,90 @@
+.listagem-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  background:
+    repeating-linear-gradient(
+      138deg,
+      rgb(139 92 246 / 0%) 0 160px,
+      rgb(139 92 246 / 20%) 160px 230px,
+      rgb(139 92 246 / 0%) 230px 360px
+    ),
+    radial-gradient(circle at 12% 20%, rgb(167 112 255 / 18%), transparent 52%),
+    linear-gradient(164deg, #060607 0%, #0d0f12 48%, #070708 100%);
+  border-bottom: 1px solid rgb(139 92 246 / 24%);
+}
+
+.listagem-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 3.5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.listagem-hero::after {
+  content: '';
+  position: absolute;
+  inset: auto -8% -42px;
+  height: 120px;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0%), rgb(0 0 0 / 58%));
+  transform: skewY(-2deg);
+}
+
+.listagem-hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 1.8rem);
+}
+
+.listagem-hero__logo {
+  width: clamp(170px, 21vw, 310px);
+  max-width: 48vw;
+  filter: drop-shadow(0 0 30px rgb(167 112 255 / 45%));
+}
+
+.listagem-hero__text {
+  display: grid;
+}
+
+.listagem-hero__eyebrow {
+  margin: 0;
+  color: rgb(214 186 255 / 80%);
+  font-size: 0.78rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.listagem-hero__title {
+  font-weight: 800;
+  margin: 0.4rem 0 0;
+  font-family: 'Oxanium', sans-serif;
+  font-size: clamp(2.7rem, 8vw, 5.6rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: var(--pl-accent-strong);
+  text-shadow: 0 0 24px rgb(167 112 255 / 35%);
+}
+
+@media (max-width: 767.98px) {
+  .listagem-hero__content {
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    padding-top: 1.4rem;
+    padding-bottom: 1.4rem;
+  }
+
+  .listagem-hero__logo {
+    width: clamp(180px, 50vw, 260px);
+    max-width: 82vw;
+  }
+}

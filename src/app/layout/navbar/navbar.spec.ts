@@ -15,6 +15,7 @@ describe('NavbarComponent', () => {
 
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
     await fixture.whenStable();
   });
 
@@ -23,10 +24,17 @@ describe('NavbarComponent', () => {
 
     expect(component).toBeTruthy();
     expect(items.length).toBe(5);
-    expect(items[0].textContent).toContain('Partidas');
-    expect(items[1].textContent).toContain('Classificacao');
+    expect(items[0].textContent).toContain('Jogos');
+    expect(items[1].textContent).toContain('Classificação');
     expect(items[2].textContent).toContain('Jogadores');
     expect(items[3].textContent).toContain('Regras');
-    expect(items[4].textContent).toContain('Estatisticas');
+    expect(items[4].textContent).toContain('Estatísticas');
+  });
+
+  it('deve usar imagem de controle como logo da navbar', () => {
+    const logo = fixture.nativeElement.querySelector('.brand__crest') as HTMLImageElement | null;
+
+    expect(logo).not.toBeNull();
+    expect(logo?.getAttribute('src')).toBe('/assets/img/controle.png');
   });
 });

@@ -1,0 +1,41 @@
+.pl-screen-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  gap: 0.9rem;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 35%, rgb(139 92 246 / 22%), transparent 48%),
+    rgb(5 6 9 / 84%);
+  backdrop-filter: blur(6px);
+}
+
+.pl-screen-loader__logo {
+  width: clamp(80px, 10vw, 124px);
+  height: auto;
+  animation: pulse-logo 1.25s ease-in-out infinite;
+}
+
+.pl-screen-loader__label {
+  margin: 0;
+  color: rgb(234 236 242 / 92%);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@keyframes pulse-logo {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.75;
+  }
+
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+}

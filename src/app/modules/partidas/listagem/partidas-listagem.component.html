@@ -1,10 +1,10 @@
 <section class="matches-page">
-  <header class="matches-hero">
-    <div class="container matches-hero__content">
-      <p class="matches-hero__eyebrow">MATCHES</p>
-      <h1 class="matches-hero__title">JOGOS</h1>
-    </div>
-  </header>
+  <app-listagem-header
+    eyebrow="MATCHES"
+    title="JOGOS"
+    [showLogo]="false"
+    testIdPrefix="matches"
+  />
 
   <section class="container matches-content py-4">
     <div class="matches-toolbar">
@@ -32,9 +32,7 @@
       </header>
 
       @if (carregando()) {
-        <div class="matches-feedback" data-testid="loading-state">
-          Carregando partidas...
-        </div>
+        <app-screen-loader [visible]="true" message="Carregando partidas..." testIdPrefix="matches" />
       } @else if (erro(); as mensagemErro) {
         <div
           class="matches-feedback matches-feedback--error"

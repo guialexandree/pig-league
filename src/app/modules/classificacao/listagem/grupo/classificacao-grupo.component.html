@@ -1,0 +1,60 @@
+<section class="classification-content py-4">
+  <div class="classification-toolbar">
+    <h2 class="classification-toolbar__group" data-testid="group-title">{{ tituloGrupo }}</h2>
+  </div>
+
+  <article class="classification-card">
+    <header class="classification-card__head">
+      <span>POSICAO</span>
+      <span>TIME</span>
+      <span>V - D</span>
+      <span>GP</span>
+      <span>GC</span>
+      <span>SG</span>
+    </header>
+
+    @if (carregando()) {
+      <div class="classification-feedback" data-testid="loading-state">Carregando classificacao...</div>
+    } @else if (erro(); as mensagemErro) {
+      <div
+        class="classification-feedback classification-feedback--error"
+        data-testid="error-state"
+        role="alert"
+      >
+        <p class="classification-feedback__message">{{ mensagemErro }}</p>
+        <button
+          type="button"
+          class="btn classification-feedback__retry"
+          (click)="tentarNovamente()"
+          data-testid="retry-load-button"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (classificacao().length === 0) {
+      <div class="classification-feedback" data-testid="empty-state">
+        Nenhum registro de classificacao para o filtro selecionado.
+      </div>
+    } @else {
+      <div class="classification-list">
+        @for (item of classificacao(); track item.jogador + item.posicao + $index) {
+          <article class="classification-row" [class.classification-row--leader]="item.posicao === 1">
+            <div class="classification-row__position">#{{ item.posicao }}</div>
+
+            <div class="classification-row__team">
+              <span class="team-badge">{{ teamTag(item.jogador) }}</span>
+              <span class="team-name">{{ item.jogador }}</span>
+            </div>
+
+            <div class="classification-row__metric" data-testid="record">
+              {{ recordLabel(item.vitorias, item.derrotas) }}
+            </div>
+            <div class="classification-row__metric" data-testid="goals-for">{{ item.golsPositivo }}</div>
+            <div class="classification-row__metric" data-testid="goals-against">{{ item.golsContra }}</div>
+            <div class="classification-row__metric" data-testid="goal-diff">{{ item.saldoGols }}</div>
+          </article>
+        }
+      </div>
+    }
+  </article>
+</section>

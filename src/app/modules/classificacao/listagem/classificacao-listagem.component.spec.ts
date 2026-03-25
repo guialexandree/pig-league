@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { faker } from '@faker-js/faker';
-import { of, throwError } from 'rxjs';
-import { GetClassificacaoDto } from '../../../data/classificacao/dto/get-classificacao.dto';
+import { NEVER, of } from 'rxjs';
 import { ClassificacaoService } from '../../../data/classificacao/classificacao-service';
+import { GetClassificacaoDto } from '../../../data/classificacao/dto/get-classificacao.dto';
+import { ClassificacaoGrupoComponent } from './grupo/classificacao-grupo.component';
 import { ClassificacaoListagemComponent } from './classificacao-listagem.component';
 
 describe(ClassificacaoListagemComponent.name, () => {
@@ -10,119 +12,108 @@ describe(ClassificacaoListagemComponent.name, () => {
     faker.seed(20260325);
   });
 
-  it('deve carregar classificacao geral na inicializacao', () => {
+  it('deve renderizar grupo 1, grupo 2 e geral com filtros iniciais corretos', () => {
     const serviceMock = createServiceMock();
 
-    TestBed.configureTestingModule({
-      imports: [ClassificacaoListagemComponent],
-      providers: [{ provide: ClassificacaoService, useValue: serviceMock }],
-    });
+    configureModule(serviceMock);
 
     const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
     fixture.detectChanges();
 
-    expect(serviceMock.getClassificacao).toHaveBeenCalledTimes(1);
-    expect(serviceMock.getClassificacao).toHaveBeenCalledWith(undefined);
+    const grupos = fixture.debugElement.queryAll(By.directive(ClassificacaoGrupoComponent));
+
+    expect(grupos.length).toBe(3);
+    expect((grupos[0].componentInstance as ClassificacaoGrupoComponent).tituloGrupo).toBe('GRUPO 1');
+    expect((grupos[0].componentInstance as ClassificacaoGrupoComponent).filtroInicial).toBe(1);
+    expect((grupos[1].componentInstance as ClassificacaoGrupoComponent).tituloGrupo).toBe('GRUPO 2');
+    expect((grupos[1].componentInstance as ClassificacaoGrupoComponent).filtroInicial).toBe(2);
+    expect((grupos[2].componentInstance as ClassificacaoGrupoComponent).tituloGrupo).toBe('RESULTADO GERAL');
+    expect((grupos[2].componentInstance as ClassificacaoGrupoComponent).filtroInicial).toBe('GERAL');
   });
 
-  it('deve exibir header no topo igual aos modulos principais', () => {
+  it('deve exibir fase regular uma unica vez na listagem', () => {
     const serviceMock = createServiceMock();
 
-    TestBed.configureTestingModule({
-      imports: [ClassificacaoListagemComponent],
-      providers: [{ provide: ClassificacaoService, useValue: serviceMock }],
-    });
-
-    const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
-    fixture.detectChanges();
-
-    const root = fixture.nativeElement as HTMLElement;
-
-    expect(root.querySelector('.classification-hero__eyebrow')?.textContent?.trim()).toBe(
-      'RANKING',
-    );
-    expect(root.querySelector('.classification-hero__title')?.textContent?.trim()).toBe(
-      'CLASSIFICACAO',
-    );
-  });
-
-  it('deve enviar grupoId=1 e grupoId=2 ao trocar filtros', () => {
-    const serviceMock = createServiceMock();
-
-    TestBed.configureTestingModule({
-      imports: [ClassificacaoListagemComponent],
-      providers: [{ provide: ClassificacaoService, useValue: serviceMock }],
-    });
+    configureModule(serviceMock);
 
     const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
-    const grupo1Button = root.querySelector(
-      '[data-testid="filter-group-1"]',
-    ) as HTMLButtonElement;
-    const grupo2Button = root.querySelector(
-      '[data-testid="filter-group-2"]',
-    ) as HTMLButtonElement;
+    const phaseLabels = root.querySelectorAll('[data-testid="phase-label"]');
 
-    grupo1Button.click();
-    fixture.detectChanges();
-    grupo2Button.click();
-    fixture.detectChanges();
-
-    expect(serviceMock.getClassificacao).toHaveBeenCalledWith({ grupoId: 1 });
-    expect(serviceMock.getClassificacao).toHaveBeenCalledWith({ grupoId: 2 });
+    expect(phaseLabels.length).toBe(1);
+    expect(phaseLabels[0]?.textContent?.trim()).toBe('Fase Regular');
   });
 
-  it('deve renderizar colunas V-D, GP, GC e SG com valores da API', () => {
-    const serviceMock = createServiceMock();
-
-    TestBed.configureTestingModule({
-      imports: [ClassificacaoListagemComponent],
-      providers: [{ provide: ClassificacaoService, useValue: serviceMock }],
-    });
-
-    const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
-    fixture.detectChanges();
-
-    const root = fixture.nativeElement as HTMLElement;
-
-    expect(root.querySelector('[data-testid="record"]')?.textContent?.trim()).toBe('3 - 0');
-    expect(root.querySelector('[data-testid="goals-for"]')?.textContent?.trim()).toBe('26');
-    expect(root.querySelector('[data-testid="goals-against"]')?.textContent?.trim()).toBe('9');
-    expect(root.querySelector('[data-testid="goal-diff"]')?.textContent?.trim()).toBe('17');
-  });
-
-  it('deve permitir tentar novamente quando ocorrer erro', () => {
-    const payload = createPayload();
+  it('deve exibir loader de tela enquanto houver grupos carregando', () => {
     const serviceMock: Pick<ClassificacaoService, 'getClassificacao'> = {
-      getClassificacao: vi
-        .fn()
-        .mockReturnValueOnce(throwError(() => new Error('falha de rede')))
-        .mockReturnValueOnce(of(payload)),
+      getClassificacao: vi.fn().mockReturnValue(NEVER),
     };
 
-    TestBed.configureTestingModule({
-      imports: [ClassificacaoListagemComponent],
-      providers: [{ provide: ClassificacaoService, useValue: serviceMock }],
-    });
+    configureModule(serviceMock);
 
     const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
-    const retryButton = root.querySelector('[data-testid="retry-load-button"]') as HTMLButtonElement;
 
-    expect(root.querySelector('[data-testid="error-state"]')).not.toBeNull();
+    expect(root.querySelector('[data-testid="classification-screen-loader"]')).not.toBeNull();
+    expect(serviceMock.getClassificacao).toHaveBeenCalledTimes(3);
+    expect(
+      (root.querySelector('[data-testid="classification-loader-logo"]') as HTMLImageElement | null)?.getAttribute(
+        'src',
+      ),
+    ).toBe('/assets/img/logo.png');
+  });
 
-    retryButton.click();
+  it('deve aplicar fallback de logo no loader quando houver erro de carregamento da imagem', () => {
+    const serviceMock: Pick<ClassificacaoService, 'getClassificacao'> = {
+      getClassificacao: vi.fn().mockReturnValue(NEVER),
+    };
+
+    configureModule(serviceMock);
+
+    const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
     fixture.detectChanges();
 
-    expect(serviceMock.getClassificacao).toHaveBeenCalledTimes(2);
-    expect(root.querySelector('[data-testid="error-state"]')).toBeNull();
-    expect(root.querySelector('[data-testid="record"]')?.textContent?.trim()).toBe('3 - 0');
+    const root = fixture.nativeElement as HTMLElement;
+    const logo = root.querySelector('[data-testid="classification-loader-logo"]') as HTMLImageElement | null;
+
+    expect(logo?.getAttribute('src')).toBe('/assets/img/logo.png');
+
+    logo?.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+    expect(logo?.getAttribute('src')).toBe('assets/img/logo.png');
+
+    logo?.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+    expect(logo?.getAttribute('src')).toBe('/browser/assets/img/logo.png');
+  });
+
+  it('deve ocultar loader de tela quando todos os grupos terminarem o carregamento', () => {
+    const serviceMock = createServiceMock();
+
+    configureModule(serviceMock);
+
+    const fixture = TestBed.createComponent(ClassificacaoListagemComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('[data-testid="classification-screen-loader"]')).toBeNull();
   });
 });
+
+function configureModule(
+  serviceMock: Pick<ClassificacaoService, 'getClassificacao'>,
+): void {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({
+    imports: [ClassificacaoListagemComponent],
+    providers: [{ provide: ClassificacaoService, useValue: serviceMock }],
+  });
+}
 
 function createServiceMock(
   payload: GetClassificacaoDto[] = createPayload(),
@@ -135,17 +126,17 @@ function createServiceMock(
 function createPayload(): GetClassificacaoDto[] {
   return [
     {
-      grupo: 'GRUPO 1',
+      grupo: 'GERAL',
       posicao: 1,
-      jogador: faker.company.name(),
-      jogos: 3,
-      vitorias: 3,
+      jogador: faker.person.fullName(),
+      jogos: 1,
+      vitorias: 1,
       empates: 0,
       derrotas: 0,
-      golsPositivo: 26,
-      golsContra: 9,
-      saldoGols: 17,
-      pontos: 9,
+      golsPositivo: 2,
+      golsContra: 0,
+      saldoGols: 2,
+      pontos: 3,
     },
   ];
 }

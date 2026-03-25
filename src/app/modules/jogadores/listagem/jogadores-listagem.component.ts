@@ -3,10 +3,13 @@ import { format, isValid, parseISO } from 'date-fns';
 import { finalize } from 'rxjs';
 import { GetJogadorDto, GetJogadoresDto } from '../../../data/jogador/dto';
 import { JogadorService } from '../../../data/jogador/jogador-service';
+import { ListagemHeaderComponent } from '../../shared/components/listagem-header/listagem-header.component';
+import { ScreenLoaderComponent } from '../../shared/components/screen-loader/screen-loader.component';
 
 @Component({
   selector: 'app-jogadores-listagem',
   standalone: true,
+  imports: [ListagemHeaderComponent, ScreenLoaderComponent],
   templateUrl: './jogadores-listagem.component.html',
   styleUrl: './jogadores-listagem.component.scss',
 })
@@ -57,6 +60,23 @@ export class JogadoresListagemComponent implements OnInit {
   formatPercentual(percentual: number): string {
     const sanitizedPercentual = this.sanitizePercentual(percentual);
     return `${sanitizedPercentual.toFixed(1)}%`;
+  }
+
+  getPlayerInitials(nome: string): string {
+    const parts = nome
+      .trim()
+      .split(/\s+/)
+      .filter((part) => part.length > 0);
+
+    if (parts.length === 0) {
+      return 'PL';
+    }
+
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
   }
 
   private carregarJogadores(): void {

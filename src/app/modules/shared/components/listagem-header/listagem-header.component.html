@@ -1,0 +1,20 @@
+<header class="listagem-hero" [attr.data-testid]="testIdPrefix + '-hero'">
+  <div class="container listagem-hero__content">
+    @if (showLogo) {
+      <img
+        [src]="logoSrc"
+        [alt]="logoAlt"
+        class="listagem-hero__logo"
+        [attr.data-testid]="testIdPrefix + '-hero-logo'"
+        (error)="onLogoError($event)"
+      />
+    }
+
+    <div class="listagem-hero__text">
+      @if (eyebrow) {
+        <p class="listagem-hero__eyebrow" [attr.data-testid]="testIdPrefix + '-hero-eyebrow'">{{ eyebrow }}</p>
+      }
+      <h1 class="listagem-hero__title" [attr.data-testid]="testIdPrefix + '-hero-title'">{{ title }}</h1>
+    </div>
+  </div>
+</header>

@@ -1,83 +1,46 @@
 <section class="classification-page">
-  <header class="classification-hero">
-    <div class="container classification-hero__content">
-      <p class="classification-hero__eyebrow">RANKING</p>
-      <h1 class="classification-hero__title">CLASSIFICACAO</h1>
-    </div>
-  </header>
+  <app-listagem-header
+    eyebrow="RANKING"
+    title="CLASSIFICAÇÃO"
+    [showLogo]="false"
+    testIdPrefix="classification"
+  />
 
-  <section class="container classification-content py-4">
-    <div class="classification-toolbar">
-      <p class="classification-toolbar__section">REGULAR</p>
+  <app-screen-loader
+    [visible]="carregandoTela()"
+    message="Carregando classificacoes..."
+    testIdPrefix="classification"
+  />
 
-      <div class="classification-toolbar__filters" role="group" aria-label="Filtros de classificacao">
-        @for (filtro of filtros; track filtro.value) {
-          <button
-            type="button"
-            class="btn classification-toolbar__filter"
-            [class.is-active]="isFiltroAtivo(filtro.value)"
-            (click)="selecionarFiltro(filtro.value)"
-            [attr.data-testid]="filtro.testId"
-          >
-            {{ filtro.label }}
-          </button>
-        }
+  <section class="classification-layout py-4">
+    <div class="container-fluid classification-layout__container">
+      <p class="classification-layout__phase" data-testid="phase-label">Fase Regular</p>
+
+      <div class="row g-4">
+        <div class="col-12 col-xl-6">
+          <app-classificacao-grupo
+            [tituloGrupo]="'GRUPO 1'"
+            [filtroInicial]="1"
+            (carregandoChange)="atualizarCarregamento('grupo1', $event)"
+          />
+        </div>
+
+        <div class="col-12 col-xl-6">
+          <app-classificacao-grupo
+            [tituloGrupo]="'GRUPO 2'"
+            [filtroInicial]="2"
+            (carregandoChange)="atualizarCarregamento('grupo2', $event)"
+          />
+        </div>
+
+        <div class="col-12">
+          <app-classificacao-grupo
+            [tituloGrupo]="'RESULTADO GERAL'"
+            [filtroInicial]="'GERAL'"
+            (carregandoChange)="atualizarCarregamento('geral', $event)"
+          />
+        </div>
       </div>
     </div>
-
-    <article class="classification-card">
-      <header class="classification-card__head">
-        <span>POSICAO</span>
-        <span>TIME</span>
-        <span>V - D</span>
-        <span>GP</span>
-        <span>GC</span>
-        <span>SG</span>
-      </header>
-
-      @if (carregando()) {
-        <div class="classification-feedback" data-testid="loading-state">Carregando classificacao...</div>
-      } @else if (erro(); as mensagemErro) {
-        <div
-          class="classification-feedback classification-feedback--error"
-          data-testid="error-state"
-          role="alert"
-        >
-          <p class="classification-feedback__message">{{ mensagemErro }}</p>
-          <button
-            type="button"
-            class="btn classification-feedback__retry"
-            (click)="tentarNovamente()"
-            data-testid="retry-load-button"
-          >
-            Tentar novamente
-          </button>
-        </div>
-      } @else if (classificacao().length === 0) {
-        <div class="classification-feedback" data-testid="empty-state">
-          Nenhum registro de classificacao para o filtro selecionado.
-        </div>
-      } @else {
-        <div class="classification-list">
-          @for (item of classificacao(); track item.jogador + item.posicao + $index) {
-            <article class="classification-row" [class.classification-row--leader]="item.posicao === 1">
-              <div class="classification-row__position">{{ item.posicao }}</div>
-
-              <div class="classification-row__team">
-                <span class="team-badge">{{ teamTag(item.jogador) }}</span>
-                <span class="team-name">{{ item.jogador }}</span>
-              </div>
-
-              <div class="classification-row__metric" data-testid="record">
-                {{ recordLabel(item) }}
-              </div>
-              <div class="classification-row__metric" data-testid="goals-for">{{ item.golsPositivo }}</div>
-              <div class="classification-row__metric" data-testid="goals-against">{{ item.golsContra }}</div>
-              <div class="classification-row__metric" data-testid="goal-diff">{{ item.saldoGols }}</div>
-            </article>
-          }
-        </div>
-      }
-    </article>
   </section>
 </section>

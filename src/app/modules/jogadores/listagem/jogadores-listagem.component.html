@@ -1,14 +1,15 @@
 <section class="players-page">
-  <header class="players-hero">
-    <div class="container players-hero__content">
-      <p class="players-hero__eyebrow">PLAYERS</p>
-      <h1 class="players-hero__title">JOGADORES</h1>
-    </div>
-  </header>
+  <app-listagem-header
+    eyebrow="PLAYERS"
+    title="JOGADORES"
+    [showLogo]="true"
+    logoAlt="Pig League"
+    testIdPrefix="players"
+  />
 
   <section class="container py-4">
     @if (carregando()) {
-      <div class="players-feedback" data-testid="loading-state">Carregando jogadores...</div>
+      <app-screen-loader [visible]="true" message="Carregando jogadores..." testIdPrefix="players" />
     } @else if (erro(); as mensagemErro) {
       <div class="players-feedback players-feedback--error" data-testid="error-state" role="alert">
         <span class="players-feedback__icon" aria-hidden="true">!</span>
@@ -33,20 +34,34 @@
       <div class="players-grid">
         @for (jogador of jogadores(); track jogador.id; let index = $index) {
           <article
-            class="player-card"
-            [class.player-card--featured]="index === 0"
+            class="player-card player-card--portrait"
             [attr.data-testid]="'player-card-' + jogador.id"
           >
-            <span class="player-card__rank">#{{ index + 1 }}</span>
+            <figure class="player-portrait-shell" [attr.data-testid]="'player-portrait-shell-' + jogador.id">
+              <div
+                class="player-media player-media-stage"
+                [attr.data-testid]="'player-media-' + jogador.id"
+                role="img"
+                datasrc="/assets/img/player-empty.png"
+                [attr.aria-label]="'Retrato de ' + jogador.nome"
+              >
+                <span
+                  class="player-placeholder__initials"
+                  [attr.data-testid]="'player-placeholder-initials-' + jogador.id"
+                >
+                  {{ getPlayerInitials(jogador.nome) }}
+                </span>
+              </div>
 
-            <header class="player-card__header">
-              <h2 class="player-card__name">{{ jogador.nome }}</h2>
-              <p class="player-card__subtitle">Tactical Card</p>
-            </header>
+              <figcaption class="player-card__header">
+                <p class="player-card__subtitle">Player Card</p>
+                <h2 class="player-card__name">{{ jogador.nome }}</h2>
+              </figcaption>
+            </figure>
 
-            <div class="player-card__stats">
+            <footer class="player-stats-band" [attr.data-testid]="'player-stats-band-' + jogador.id">
               <div class="win-gauge" [style.--pl-win-angle]="toWinAngle(jogador.percentualVitoria)">
-                <span class="win-gauge__value">{{ formatPercentual(jogador.percentualVitoria) }}</span>
+                <span class="win-gauge__value">{{ jogador.percentualVitoria }}%</span>
                 <span class="win-gauge__caption">VITORIA</span>
               </div>
 
@@ -64,7 +79,7 @@
                   <strong>{{ jogador.vitorias }}</strong>
                 </li>
               </ul>
-            </div>
+            </footer>
           </article>
         }
       </div>

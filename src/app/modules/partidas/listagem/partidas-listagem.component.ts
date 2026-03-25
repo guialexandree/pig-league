@@ -8,6 +8,8 @@ import {
 } from '../../../data/partida/dto';
 import { GetPartidasFiltrosDto } from '../../../data/partida/dto/get-partidas-filtros.dto';
 import { PartidaService } from '../../../data/partida/partida-service';
+import { ListagemHeaderComponent } from '../../shared/components/listagem-header/listagem-header.component';
+import { ScreenLoaderComponent } from '../../shared/components/screen-loader/screen-loader.component';
 
 type PartidasFiltroUi = 'GERAL' | PartidaGrupoEnum;
 
@@ -20,6 +22,7 @@ interface FiltroPartidaItem {
 @Component({
   selector: 'app-partidas-listagem',
   standalone: true,
+  imports: [ListagemHeaderComponent, ScreenLoaderComponent],
   templateUrl: './partidas-listagem.component.html',
   styleUrl: './partidas-listagem.component.scss',
 })
