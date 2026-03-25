@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { GetPartidasFiltrosDto } from './dto/get-partidas-filtros.dto';
 import { GetPartidasDto } from './dto/get-partidas.dto';
-import { environment } from '@/environment/environment';
+import { environment } from '@/environments/environment';
 
 @Injectable({
   providedIn: 'root',
