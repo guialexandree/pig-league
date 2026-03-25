@@ -47,7 +47,7 @@
   height: 2.5rem;
   border-radius: 0.58rem;
   object-fit: cover;
-  border: 1px solid rgb(255 179 0 / 35%);
+  border: 1px solid rgb(139 92 246 / 35%);
 }
 
 .brand__text {
@@ -56,7 +56,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #ffb20a;
+  color: var(--pl-accent-strong);
 }
 
 .menu {
@@ -88,8 +88,8 @@
 }
 
 .menu__link.active {
-  color: #ffb00a;
-  background: rgb(255 176 10 / 15%);
+  color: var(--pl-accent-strong);
+  background: rgb(139 92 246 / 15%);
 }
 
 .site-nav__actions {

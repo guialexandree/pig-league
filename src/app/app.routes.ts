@@ -18,7 +18,17 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./modules/jogadores/jogadores.routes').then((m) => m.jogadoresRoutes),
       },
-      { path: 'classificacao', component: SectionTemplateComponent },
+      {
+        path: 'classificacao',
+        loadChildren: () =>
+          import('./modules/classificacao/classificacao.routes').then(
+            (m) => m.classificacaoRoutes,
+          ),
+      },
+      {
+        path: 'regras',
+        loadChildren: () => import('./modules/regras/regras.routes').then((m) => m.regrasRoutes),
+      },
       { path: 'estatisticas', component: SectionTemplateComponent },
     ],
   },

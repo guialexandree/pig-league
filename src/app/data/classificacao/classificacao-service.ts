@@ -3,17 +3,16 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LoadClassificacaoFiltersDto } from './dto/get-classificacao-filtros.dto';
 import { GetClassificacaoDto } from './dto/get-classificacao.dto';
+import { environment } from '@/environment/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClassificacaoService {
-  private readonly path = '/campeonato/classificacao';
+  private readonly path = `${environment.apiUrl}/campeonato/classificacao`;
   private readonly http = inject(HttpClient);
 
-  getClassificacao(
-    filters?: LoadClassificacaoFiltersDto,
-  ): Observable<GetClassificacaoDto[]> {
+  getClassificacao(filters?: LoadClassificacaoFiltersDto): Observable<GetClassificacaoDto[]> {
     const params =
       filters?.grupoId === undefined
         ? undefined

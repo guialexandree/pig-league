@@ -1,0 +1,48 @@
+<section class="rules-page">
+  <header class="rules-hero">
+    <div class="container rules-hero__content">
+      <p class="rules-hero__eyebrow">REGULAMENTO</p>
+      <h1 class="rules-hero__title">REGRAS DO CAMPEONATO</h1>
+      <p class="rules-hero__subtitle">
+        Leiam com atencao para evitar duvidas durante a competicao.
+      </p>
+    </div>
+  </header>
+
+  <section class="container py-4 rules-content">
+    <div class="rules-grid">
+      @for (section of sections; track section.title) {
+        <article class="rules-card">
+          <h2 class="rules-card__title" data-testid="rules-section-title">
+            {{ section.title }}
+          </h2>
+
+          @if (section.ordered) {
+            <ol class="rules-card__list rules-card__list--ordered">
+              @for (item of section.items; track item) {
+                <li>{{ item }}</li>
+              }
+            </ol>
+          } @else {
+            <ul class="rules-card__list">
+              @for (item of section.items; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          }
+
+          @if (section.title === 'Classificacao para o mata-mata') {
+            <div class="rules-card__subsection">
+              <p class="rules-card__subsection-title">Cruzamentos das quartas de final:</p>
+              <ul class="rules-card__list rules-card__list--crosses">
+                @for (cross of quarterFinalCrosses; track cross) {
+                  <li data-testid="cross-item">{{ cross }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  </section>
+</section>

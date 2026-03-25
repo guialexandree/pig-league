@@ -4,8 +4,12 @@
   --pl-bg-0: #060607;
   --pl-bg-1: #0f1114;
   --pl-bg-2: #1a1d22;
-  --pl-accent: #ffb000;
-  --pl-accent-soft: rgb(255 176 0 / 18%);
+  --pl-accent: #8b5cf6;
+  --pl-accent-strong: #a075ff;
+  --pl-accent-muted: #e6d7ff;
+  --pl-accent-soft: rgb(139 92 246 / 18%);
+  --pl-accent-soft-strong: rgb(139 92 246 / 24%);
+  --pl-accent-border: rgb(139 92 246 / 62%);
   --pl-text-primary: #eef1f5;
   --pl-text-secondary: rgb(238 241 245 / 68%);
 }
@@ -24,7 +28,7 @@ body {
   font-family: 'Rajdhani', sans-serif;
   color: var(--pl-text-primary);
   background:
-    radial-gradient(circle at 12% -10%, rgb(255 176 0 / 16%), transparent 45%),
-    radial-gradient(circle at 100% 10%, rgb(255 111 0 / 10%), transparent 40%),
+    radial-gradient(circle at 12% -10%, rgb(139 92 246 / 16%), transparent 45%),
+    radial-gradient(circle at 100% 10%, rgb(167 112 255 / 10%), transparent 40%),
     linear-gradient(165deg, var(--pl-bg-0), var(--pl-bg-1) 45%, var(--pl-bg-0) 100%);
 }
