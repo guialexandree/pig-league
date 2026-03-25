@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { computed, signal } from '@angular/core';
 import { faker } from '@faker-js/faker';
 import { of, throwError } from 'rxjs';
 import { GetPartidasDto } from '../../../data/partida/dto/get-partidas.dto';
@@ -6,13 +7,33 @@ import { PartidaGrupoEnum } from '../../../data/partida/dto/partida-grupo.enum';
 import { PartidaStatusEnum } from '../../../data/partida/dto/partida-status.enum';
 import { PartidaService } from '../../../data/partida/partida-service';
 import { PartidasListagemComponent } from './partidas-listagem.component';
+import { PartidasFiltroUi, PartidasListagemService } from './partidas-listagem.service';
 
 describe(PartidasListagemComponent.name, () => {
   beforeEach(() => {
     faker.seed(20260325);
   });
 
-  it('deve carregar partidas sem filtro na inicializacao', () => {
+  it('deve delegar carga inicial para o PartidasListagemService', () => {
+    const listagemServiceMock = createListagemServiceMock();
+    const partidaServiceMock = createServiceMock();
+
+    TestBed.configureTestingModule({
+      imports: [PartidasListagemComponent],
+      providers: [
+        { provide: PartidasListagemService, useValue: listagemServiceMock },
+        { provide: PartidaService, useValue: partidaServiceMock },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(PartidasListagemComponent);
+    fixture.detectChanges();
+
+    expect(listagemServiceMock.carregar).toHaveBeenCalledTimes(1);
+    expect(partidaServiceMock.getPartidas).not.toHaveBeenCalled();
+  });
+
+  it('deve renderizar o subcomponente de proximas partidas', () => {
     const serviceMock = createServiceMock();
 
     TestBed.configureTestingModule({
@@ -23,8 +44,55 @@ describe(PartidasListagemComponent.name, () => {
     const fixture = TestBed.createComponent(PartidasListagemComponent);
     fixture.detectChanges();
 
-    expect(serviceMock.getPartidas).toHaveBeenCalledTimes(1);
-    expect(serviceMock.getPartidas).toHaveBeenCalledWith(undefined);
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('app-partidas-proximas')).not.toBeNull();
+  });
+
+  it('deve exibir totalizadores acima dos filtros', () => {
+    const serviceMock = createServiceMock([
+      {
+        grupo: 'GRUPO 1',
+        dataHora: '2026-03-08T21:00:00',
+        mandante: faker.company.name(),
+        golsMandante: 2,
+        golsVisitante: 1,
+        visitante: faker.company.name(),
+        status: PartidaStatusEnum.REALIZADA,
+      },
+      {
+        grupo: 'GRUPO 2',
+        dataHora: '2026-03-10T21:00:00',
+        mandante: faker.company.name(),
+        golsMandante: null,
+        golsVisitante: null,
+        visitante: faker.company.name(),
+        status: PartidaStatusEnum.AGENDADA,
+      },
+      {
+        grupo: 'GRUPO 2',
+        dataHora: null,
+        mandante: faker.company.name(),
+        golsMandante: null,
+        golsVisitante: null,
+        visitante: faker.company.name(),
+        status: PartidaStatusEnum.NAO_AGENDADA,
+      },
+    ]);
+
+    TestBed.configureTestingModule({
+      imports: [PartidasListagemComponent],
+      providers: [{ provide: PartidaService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(PartidasListagemComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('[data-testid="totais-total-partidas"]')?.textContent?.trim()).toBe('3');
+    expect(root.querySelector('[data-testid="totais-total-realizadas"]')?.textContent?.trim()).toBe('1');
+    expect(root.querySelector('[data-testid="totais-total-pendente"]')?.textContent?.trim()).toBe('2');
   });
 
   it('deve exibir data e horario em colunas separadas', () => {
@@ -140,9 +208,7 @@ describe(PartidasListagemComponent.name, () => {
     filterButton.click();
     fixture.detectChanges();
 
-    expect(serviceMock.getPartidas).toHaveBeenCalledWith({
-      grupoId: PartidaGrupoEnum.GRUPO_1,
-    });
+    expect(serviceMock.getPartidas).toHaveBeenCalledTimes(1);
   });
 
   it('deve permitir tentar novamente quando ocorrer erro ao carregar partidas', () => {
@@ -182,6 +248,34 @@ function createServiceMock(payload?: GetPartidasDto[]): Pick<PartidaService, 'ge
   return {
     getPartidas: vi.fn().mockReturnValue(of(payload ?? createResponsePayload())),
   };
+}
+
+function createListagemServiceMock() {
+  const carregando = signal(false);
+  const erro = signal<string | null>(null);
+  const filtroSelecionado = signal<PartidasFiltroUi>('GERAL');
+  const partidas = signal<GetPartidasDto[]>(createResponsePayload());
+
+  return {
+    carregar: vi.fn(),
+    selecionarFiltro: vi.fn((filtro: PartidasFiltroUi) => filtroSelecionado.set(filtro)),
+    tentarNovamente: vi.fn(),
+    carregando,
+    erro,
+    filtroSelecionado,
+    partidas,
+    partidasFiltradas: computed(() => partidas()),
+  } satisfies Pick<
+    PartidasListagemService,
+    | 'carregar'
+    | 'selecionarFiltro'
+    | 'tentarNovamente'
+    | 'carregando'
+    | 'erro'
+    | 'filtroSelecionado'
+    | 'partidas'
+    | 'partidasFiltradas'
+  >;
 }
 
 function createResponsePayload(): GetPartidasDto[] {

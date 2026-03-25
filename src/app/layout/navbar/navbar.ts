@@ -12,7 +12,7 @@ export class NavbarComponent {
   readonly menu = [
     { label: 'Jogos', route: '/partidas' },
     { label: 'Classificação', route: '/classificacao' },
-    { label: 'Jogadores', route: '/jogadores' },
+    { label: 'Players', route: '/jogadores' },
     { label: 'Regras', route: '/regras' },
     { label: 'Estatísticas', route: '/estatisticas' },
   ];

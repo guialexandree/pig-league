@@ -1,17 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { format, isValid, parseISO } from 'date-fns';
-import { finalize } from 'rxjs';
-import {
-  GetPartidasDto,
-  PartidaGrupoEnum,
-  PartidaStatusEnum,
-} from '../../../data/partida/dto';
-import { GetPartidasFiltrosDto } from '../../../data/partida/dto/get-partidas-filtros.dto';
-import { PartidaService } from '../../../data/partida/partida-service';
+import { GetPartidasDto, PartidaGrupoEnum, PartidaStatusEnum } from '../../../data/partida/dto';
 import { ListagemHeaderComponent } from '../../shared/components/listagem-header/listagem-header.component';
 import { ScreenLoaderComponent } from '../../shared/components/screen-loader/screen-loader.component';
-
-type PartidasFiltroUi = 'GERAL' | PartidaGrupoEnum;
+import { PartidasProximasComponent } from './proximas-partidas/partidas-proximas.component';
+import { PartidasFiltroUi, PartidasListagemService } from './partidas-listagem.service';
+import { PartidasTotaisComponent } from './totais/partidas-totais.component';
 
 interface FiltroPartidaItem {
   label: string;
@@ -22,12 +16,17 @@ interface FiltroPartidaItem {
 @Component({
   selector: 'app-partidas-listagem',
   standalone: true,
-  imports: [ListagemHeaderComponent, ScreenLoaderComponent],
+  imports: [
+    ListagemHeaderComponent,
+    ScreenLoaderComponent,
+    PartidasProximasComponent,
+    PartidasTotaisComponent,
+  ],
   templateUrl: './partidas-listagem.component.html',
   styleUrl: './partidas-listagem.component.scss',
 })
 export class PartidasListagemComponent implements OnInit {
-  private readonly partidaService = inject(PartidaService);
+  readonly service = inject(PartidasListagemService);
 
   readonly filtros: ReadonlyArray<FiltroPartidaItem> = [
     { label: 'Geral', value: 'GERAL', testId: 'filter-general' },
@@ -35,31 +34,37 @@ export class PartidasListagemComponent implements OnInit {
     { label: 'Grupo 2', value: PartidaGrupoEnum.GRUPO_2, testId: 'filter-group-2' },
   ];
 
-  readonly carregando = signal<boolean>(false);
-  readonly erro = signal<string | null>(null);
-  readonly filtroSelecionado = signal<PartidasFiltroUi>('GERAL');
-  readonly resposta = signal<GetPartidasDto[] | null>(null);
+  readonly totalizadores = computed(() => {
+    const partidas = this.service.partidas();
+    const totalPartidas = partidas.length;
+    const totalRealizadas = partidas.filter(
+      (partida) => partida.status === PartidaStatusEnum.REALIZADA,
+    ).length;
+    const totalPendentes = partidas.filter((partida) =>
+      [PartidaStatusEnum.AGENDADA, PartidaStatusEnum.NAO_AGENDADA].includes(partida.status),
+    ).length;
 
-  readonly partidas = computed<GetPartidasDto[]>(() => this.resposta() ?? []);
+    return {
+      totalPartidas,
+      totalRealizadas,
+      totalPendentes,
+    };
+  });
 
   ngOnInit(): void {
-    this.carregarPartidas('GERAL');
+    this.service.carregar();
   }
 
   selecionarFiltro(filter: PartidasFiltroUi): void {
-    if (filter === this.filtroSelecionado() && this.resposta() !== null) {
-      return;
-    }
-
-    this.carregarPartidas(filter);
+    this.service.selecionarFiltro(filter);
   }
 
   isFiltroAtivo(filter: PartidasFiltroUi): boolean {
-    return this.filtroSelecionado() === filter;
+    return this.service.filtroSelecionado() === filter;
   }
 
   tentarNovamente(): void {
-    this.carregarPartidas(this.filtroSelecionado());
+    this.service.tentarNovamente();
   }
 
   formatarData(dataHora: string | null): string {
@@ -99,31 +104,6 @@ export class PartidasListagemComponent implements OnInit {
       .join('');
 
     return letters || 'PL';
-  }
-
-  private carregarPartidas(filter: PartidasFiltroUi): void {
-    this.filtroSelecionado.set(filter);
-    this.carregando.set(true);
-    this.erro.set(null);
-
-    this.partidaService
-      .getPartidas(this.toApiFilters(filter))
-      .pipe(finalize(() => this.carregando.set(false)))
-      .subscribe({
-        next: (resposta) => this.resposta.set(resposta),
-        error: () => {
-          this.resposta.set(null);
-          this.erro.set('Nao foi possivel carregar as partidas no momento.');
-        },
-      });
-  }
-
-  private toApiFilters(filter: PartidasFiltroUi): GetPartidasFiltrosDto | undefined {
-    if (filter === 'GERAL') {
-      return undefined;
-    }
-
-    return { grupoId: filter };
   }
 
   private parseData(value: string | null): Date | null {

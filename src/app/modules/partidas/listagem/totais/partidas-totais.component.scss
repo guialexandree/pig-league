@@ -1,0 +1,116 @@
+.totais {
+  --board-bg: #12081d;
+  --board-line: rgb(178 116 255 / 12%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 360px));
+  justify-content: end;
+  gap: 0.7rem;
+}
+
+.totais__item {
+  --item-accent: #ffc860;
+  --item-accent-soft: rgb(255 200 96 / 26%);
+  border-radius: 0.82rem;
+  border: 1px solid rgb(171 103 255 / 30%);
+  background:
+    linear-gradient(180deg, rgb(127 55 201 / 22%), transparent 34%),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 11px,
+      var(--board-line) 11px,
+      var(--board-line) 12px
+    ),
+    var(--board-bg);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 5%),
+    0 10px 24px rgb(0 0 0 / 34%);
+  padding: 0.68rem 0.78rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.totais__item::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--item-accent), rgb(255 255 255 / 0%));
+  box-shadow: 0 0 16px var(--item-accent-soft);
+}
+
+.totais__item--group {
+  --item-accent: #ffc860;
+  --item-accent-soft: rgb(255 200 96 / 24%);
+}
+
+.totais__item--done {
+  --item-accent: #70f3ab;
+  --item-accent-soft: rgb(112 243 171 / 24%);
+}
+
+.totais__item--pending {
+  --item-accent: #ff8f8f;
+  --item-accent-soft: rgb(255 143 143 / 24%);
+}
+
+.totais__label {
+  display: block;
+  color: rgb(205 216 227 / 80%);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.totais__window {
+  margin-top: 0.36rem;
+  border-radius: 0.48rem;
+  border: 1px solid rgb(166 102 255 / 28%);
+  background: linear-gradient(180deg, rgb(10 3 18 / 94%), rgb(20 8 32 / 94%));
+  min-height: 48px;
+  display: grid;
+  align-items: center;
+  justify-items: end;
+  padding-inline: 0.55rem;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 2%),
+    inset 0 8px 18px rgb(0 0 0 / 38%);
+}
+
+.totais__value {
+  --digit-color: #ffc860;
+  display: block;
+  font-family: 'Oxanium', sans-serif;
+  font-size: 1.86rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--digit-color);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--digit-color), transparent 56%);
+}
+
+.totais__item--done .totais__value {
+  --digit-color: #70f3ab;
+}
+
+.totais__item--pending .totais__value {
+  --digit-color: #ff8f8f;
+}
+
+@media (max-width: 767.98px) {
+  .totais {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+    gap: 0.58rem;
+  }
+
+  .totais__window {
+    min-height: 44px;
+  }
+
+  .totais__value {
+    font-size: 1.58rem;
+  }
+}

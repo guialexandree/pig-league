@@ -7,6 +7,14 @@
   />
 
   <section class="container matches-content py-4">
+    <div class="matches-totals-wrap">
+      <app-partidas-totais
+        [totalPartidas]="totalizadores().totalPartidas"
+        [totalRealizadas]="totalizadores().totalRealizadas"
+        [totalPendentes]="totalizadores().totalPendentes"
+      />
+    </div>
+
     <div class="matches-toolbar">
 
       <div class="matches-toolbar__filters" role="group" aria-label="Filtros de grupo">
@@ -24,6 +32,13 @@
       </div>
     </div>
 
+    <div class="matches-upcoming">
+      <app-partidas-proximas
+        [titulo]="'PROXIMAS PARTIDAS'"
+        [partidas]="service.partidasFiltradas()"
+      />
+    </div>
+
     <article class="matches-card">
       <header class="matches-card__head">
         <span>DATA</span>
@@ -31,9 +46,9 @@
         <span>JOGO</span>
       </header>
 
-      @if (carregando()) {
+      @if (service.carregando()) {
         <app-screen-loader [visible]="true" message="Carregando partidas..." testIdPrefix="matches" />
-      } @else if (erro(); as mensagemErro) {
+      } @else if (service.erro(); as mensagemErro) {
         <div
           class="matches-feedback matches-feedback--error"
           data-testid="error-state"
@@ -54,13 +69,13 @@
             Tentar novamente
           </button>
         </div>
-      } @else if (partidas().length === 0) {
+      } @else if (service.partidasFiltradas().length === 0) {
         <div class="matches-feedback" data-testid="empty-state">
           Nenhuma partida encontrada para este filtro.
         </div>
       } @else {
         <div class="matches-list">
-          @for (partida of partidas(); track partida.mandante + partida.visitante + $index) {
+          @for (partida of service.partidasFiltradas(); track partida.mandante + partida.visitante + $index) {
             <article class="match-row" [class.match-row--canceled]="isCancelada(partida.status)">
               <div class="match-row__date" data-testid="match-date">
                 {{ formatarData(partida.dataHora) }}

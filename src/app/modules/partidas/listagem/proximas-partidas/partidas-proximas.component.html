@@ -1,0 +1,61 @@
+<section class="upcoming">
+  <header class="upcoming__header">
+    <h3 class="upcoming__title" data-testid="upcoming-title">
+      <span class="upcoming__title-icon" data-testid="upcoming-calendar-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path
+            d="M7 2.75a.75.75 0 0 1 .75.75V5h8.5V3.5a.75.75 0 0 1 1.5 0V5h1.5A2.75 2.75 0 0 1 22 7.75v11.5A2.75 2.75 0 0 1 19.25 22H4.75A2.75 2.75 0 0 1 2 19.25V7.75A2.75 2.75 0 0 1 4.75 5h1.5V3.5A.75.75 0 0 1 7 2.75Zm13.5 7.5h-17v9a1.25 1.25 0 0 0 1.25 1.25h14.5a1.25 1.25 0 0 0 1.25-1.25v-9Zm-1.25-3.75H4.75A1.25 1.25 0 0 0 3.5 7.75v1h17v-1a1.25 1.25 0 0 0-1.25-1.25Z"
+          />
+        </svg>
+      </span>
+      <span>{{ tituloFinal() }}</span>
+    </h3>
+    <p class="upcoming__subtitle">Somente partidas com status agendada.</p>
+  </header>
+
+  @if (partidasAgendadas().length === 0) {
+    <div class="upcoming__empty" data-testid="upcoming-empty-state">
+      Nenhuma partida agendada no momento.
+    </div>
+  } @else {
+    <ngb-carousel
+      [interval]="0"
+      [keyboard]="true"
+      [pauseOnHover]="true"
+      [showNavigationArrows]="slides().length > 1"
+      [showNavigationIndicators]="slides().length > 1"
+      class="upcoming__carousel"
+    >
+      @for (slide of slides(); track $index) {
+        <ng-template ngbSlide [id]="'upcoming-slide-' + $index">
+          <div class="row g-3 upcoming__slide">
+            @for (partida of slide; track partida.mandante + partida.visitante + $index) {
+              <div class="col-12 col-md-6 col-xl-4">
+                <article class="card upcoming-card" data-testid="upcoming-card">
+                  <div class="card-body">
+                    <div class="upcoming-card__meta">
+                      <span>{{ formatarData(partida.dataHora) }}</span>
+                      <span>{{ formatarHorario(partida.dataHora) }}</span>
+                    </div>
+
+                    <p class="upcoming-card__teams">
+                      <span>{{ partida.mandante }}</span>
+                      <span class="upcoming-card__vs">vs</span>
+                      <span>{{ partida.visitante }}</span>
+                    </p>
+
+                    <div class="upcoming-card__score">
+                      <span>{{ placarMandante(partida) }}</span>
+                      <span>:</span>
+                      <span>{{ placarVisitante(partida) }}</span>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            }
+          </div>
+        </ng-template>
+      }
+    </ngb-carousel>
+  }
+</section>
