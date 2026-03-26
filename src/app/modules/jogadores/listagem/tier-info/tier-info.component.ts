@@ -10,7 +10,6 @@ interface TierInfoItem {
   readonly faixaXp: string;
   readonly progressoExemplo: string;
   readonly imagem: string;
-  readonly medalha: string;
   readonly tier: 'silver' | 'gold' | 'hero';
 }
 
@@ -34,24 +33,21 @@ export class TierInfoComponent {
       nome: descricaoJogadorTier[JogadorTierEnum.Silver],
       faixaXp: jogadorTierFaixaXp[JogadorTierEnum.Silver],
       progressoExemplo: '99/109 XP tier',
-      imagem: '/assets/img/silver.png',
-      medalha: '🥈',
+      imagem: '/assets/img/controle-silver.png',
       tier: 'silver',
     },
     {
       nome: descricaoJogadorTier[JogadorTierEnum.Gold],
       faixaXp: jogadorTierFaixaXp[JogadorTierEnum.Gold],
       progressoExemplo: '145/169 XP tier',
-      imagem: '/assets/img/gold.png',
-      medalha: '🥇',
+      imagem: '/assets/img/controle-gold.png',
       tier: 'gold',
     },
     {
       nome: descricaoJogadorTier[JogadorTierEnum.Hero],
       faixaXp: jogadorTierFaixaXp[JogadorTierEnum.Hero],
       progressoExemplo: '170/170 XP tier',
-      imagem: '/assets/img/hero.png',
-      medalha: '🏅',
+      imagem: '/assets/img/controle-icon.png',
       tier: 'hero',
     },
   ];

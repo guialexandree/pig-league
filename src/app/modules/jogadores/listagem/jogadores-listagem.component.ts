@@ -51,6 +51,12 @@ export class JogadoresListagemComponent implements OnInit {
     }),
   );
 
+  readonly tierImg = {
+    [JogadorTierEnum.Silver]: 'assets/img/controle-silver.png',
+    [JogadorTierEnum.Gold]: 'assets/img/controle-gold.png',
+    [JogadorTierEnum.Hero]: 'assets/img/controle-icon.png',
+  }
+
   ngOnInit(): void {
     this.carregarJogadores();
   }

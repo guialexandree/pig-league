@@ -71,10 +71,10 @@
                 [attr.data-testid]="'player-tier-progress-' + jogador.id"
               >
                 <div class="player-tier-progress__meta">
+                  <span class="tier-icon">
+                    <img [src]="tierImg[jogador.tier]" height="80" [alt]="'Card do tier'" loading="lazy" decoding="async" />
+                  </span>
                   <span class="player-tier-progress__tier-badge" [attr.data-tier]="jogador.tier">
-                    <span class="player-tier-progress__medal" [attr.data-tier]="jogador.tier" aria-hidden="true">
-                      {{ getTierMedal(jogador.tier) }}
-                    </span>
                     <span class="player-tier-progress__tier">{{ getTierLabel(jogador.tier) }}</span>
                   </span>
                   <span class="player-tier-progress__xp">{{ jogador.xp }} XP</span>

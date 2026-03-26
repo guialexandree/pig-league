@@ -317,12 +317,20 @@
   font-size: 0.58rem;
   letter-spacing: 0.08em;
   color: rgb(232 217 255 / 88%);
+
+  & .tier-icon img {
+    position: absolute;
+    top: -2.5rem;
+    left: 0;
+  }
 }
 
 .player-tier-progress__tier-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.36rem;
+  position: relative;
+
 }
 
 .player-tier-progress__tier {
@@ -332,7 +340,7 @@
 .player-tier-progress__medal {
   width: clamp(1.26rem, 1.6vw, 1.58rem);
   height: clamp(1.26rem, 1.6vw, 1.58rem);
-  display: inline-grid;
+  display: flex;
   place-items: center;
   border-radius: 999px;
   font-size: clamp(0.9rem, 1.1vw, 1.1rem);
@@ -345,6 +353,9 @@
     0 0 0 1px rgb(255 255 255 / 10%),
     0 0 14px rgb(255 255 255 / 28%);
   filter: drop-shadow(0 4px 8px rgb(0 0 0 / 34%));
+
+  align-items: center;
+  justify-content: center;
 }
 
 .player-tier-progress__medal[data-tier='1'] {

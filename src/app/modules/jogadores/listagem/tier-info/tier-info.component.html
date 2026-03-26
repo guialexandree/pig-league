@@ -10,11 +10,10 @@
         @for (tier of tiers; track tier.nome) {
           <article class="tier-card" [attr.data-tier]="tier.tier" [attr.data-testid]="'tier-card-' + tier.tier">
             <div class="tier-card__img-shell">
-              <img [src]="tier.imagem" [alt]="'Card do tier ' + tier.nome" loading="lazy" decoding="async" />
+              <img [src]="tier.imagem" height="100" [alt]="'Card do tier ' + tier.nome" loading="lazy" decoding="async" />
             </div>
             <div class="tier-card__content">
               <p class="tier-card__name">
-                <span class="tier-card__medal" [attr.data-tier]="tier.tier" aria-hidden="true">{{ tier.medalha }}</span>
                 {{ tier.nome }}
               </p>
               <p class="tier-card__xp">{{ tier.faixaXp }}</p>
