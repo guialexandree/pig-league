@@ -21,12 +21,16 @@ describe(ClassificacaoGrupoComponent.name, () => {
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
+    const colunasCabecalho = Array.from(root.querySelectorAll('.classification-card__head span')).map(
+      (column) => column.textContent?.trim(),
+    );
 
     expect(root.querySelector('[data-testid="group-title"]')?.textContent?.trim()).toBe('GRUPO 1');
     expect(root.querySelectorAll('.classification-row').length).toBe(1);
-    expect(root.querySelector('.classification-card__head')?.textContent).toContain('V - E - D');
+    expect(colunasCabecalho).toEqual(['POSICAO', 'TIME', 'V - E - D', 'J', 'GP', 'GC', 'SG', 'P']);
     expect(root.querySelector('[data-testid="phase-status"]')).toBeNull();
     expect(root.querySelector('[data-testid="record"]')?.textContent?.trim()).toBe('3 - 0 - 0');
+    expect(root.querySelector('[data-testid="matches"]')?.textContent?.trim()).toBe('3');
     expect(root.querySelector('[data-testid="points"]')?.textContent?.trim()).toBe('9');
     expect(root.querySelector('[data-testid="classification-legend"]')?.textContent).toContain('Playoffs');
     expect(root.querySelector('[data-testid="classification-legend"]')?.textContent).toContain(
