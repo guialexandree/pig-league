@@ -41,46 +41,36 @@
       </div>
     </div>
 
-    <article
-      class="matches-card"
-      [class.matches-card--loading]="service.carregando()"
-    >
-      <header class="matches-card__head">
-        <h3 class="matches-card__title">PARTIDAS PENDENTES</h3>
-        <span>JOGO</span>
-      </header>
-
-      @if (service.erro(); as mensagemErro) {
-        <div
-          class="matches-feedback matches-feedback--error"
-          data-testid="error-state"
-          role="alert"
-          aria-live="assertive"
+    @if (service.erro(); as mensagemErro) {
+      <div
+        class="matches-feedback matches-feedback--error"
+        data-testid="error-state"
+        role="alert"
+        aria-live="assertive"
+      >
+        <span class="matches-feedback__icon" aria-hidden="true">!</span>
+        <div class="matches-feedback__content">
+          <p class="matches-feedback__title">Falha ao carregar partidas</p>
+          <p class="matches-feedback__message">{{ mensagemErro }}</p>
+        </div>
+        <button
+          type="button"
+          class="btn matches-feedback__retry"
+          (click)="tentarNovamente()"
+          data-testid="retry-load-button"
         >
-          <span class="matches-feedback__icon" aria-hidden="true">!</span>
-          <div class="matches-feedback__content">
-            <p class="matches-feedback__title">Falha ao carregar partidas</p>
-            <p class="matches-feedback__message">{{ mensagemErro }}</p>
-          </div>
-          <button
-            type="button"
-            class="btn matches-feedback__retry"
-            (click)="tentarNovamente()"
-            data-testid="retry-load-button"
-          >
-            Tentar novamente
-          </button>
-        </div>
-      } @else if (service.partidas().length === 0 && !service.carregando()) {
-        <div class="matches-feedback" data-testid="empty-state">
-          Nenhuma partida encontrada para este filtro.
-        </div>
-      } @else {
-        <app-partidas-pendentes
-          [partidas]="service.partidas()"
-          [isLoading]="service.carregando()"
-        />
-      }
-    </article>
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (service.partidas().length === 0 && !service.carregando()) {
+      <div class="matches-feedback" data-testid="empty-state">
+        Nenhuma partida encontrada para este filtro.
+      </div>
+    } @else {
+      <app-partidas-pendentes
+        [partidas]="service.partidas()"
+        [isLoading]="service.carregando()"
+      />
+    }
   </section>
 </section>

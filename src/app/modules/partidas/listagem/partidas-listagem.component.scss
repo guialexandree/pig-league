@@ -64,45 +64,6 @@
   margin-bottom: 1.2rem;
 }
 
-.matches-card {
-  border-radius: 0.95rem;
-  border: 1px solid rgb(255 255 255 / 10%);
-  background: linear-gradient(
-    165deg,
-    rgb(20 22 25 / 88%),
-    rgb(14 15 17 / 88%) 56%,
-    rgb(12 13 15 / 88%)
-  );
-  box-shadow: 0 28px 60px rgb(0 0 0 / 48%);
-  overflow: hidden;
-}
-
-.matches-card--loading {
-  position: relative;
-  z-index: 5;
-}
-
-.matches-card__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem 1rem;
-  color: rgb(214 219 228 / 60%);
-  font-size: 0.76rem;
-  letter-spacing: 0.06em;
-  font-weight: 700;
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
-}
-
-.matches-card__title {
-  margin: 0;
-  color: rgb(239 242 249 / 94%);
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-}
-
 .matches-feedback {
   padding: 1.15rem 1rem;
   color: rgb(225 230 235 / 76%);
@@ -177,10 +138,6 @@
 @media (max-width: 991.98px) {
   .matches-totals-wrap {
     margin-top: -2.25rem;
-  }
-
-  .matches-card__head {
-    display: none;
   }
 
   .matches-feedback--error {

@@ -1,78 +1,88 @@
-@if (isLoading) {
-  <div
-    class="matches-card-loader"
-    data-testid="pending-matches-loader"
-    aria-live="polite"
-    aria-busy="true"
-  >
-    <img
-      class="matches-card-loader__logo"
-      src="/assets/img/logo.png"
-      alt="Pig League"
-      data-testid="pending-matches-loader-logo"
-    />
-    <p class="matches-card-loader__label">Carregando partidas pendentes...</p>
+<article
+  class="matches-card"
+  [class.matches-card--loading]="isLoading"
+>
+  <header class="matches-card__head">
+    <h3 class="matches-card__title">PARTIDAS PENDENTES</h3>
+    <span>JOGO</span>
+  </header>
+
+  @if (isLoading) {
     <div
-      class="progress matches-card-loader__progress"
-      role="progressbar"
-      aria-label="Carregamento das partidas pendentes"
-      aria-valuemin="0"
-      aria-valuemax="100"
+      class="matches-card-loader"
+      data-testid="pending-matches-loader"
+      aria-live="polite"
+      aria-busy="true"
     >
+      <img
+        class="matches-card-loader__logo"
+        src="/assets/img/logo.png"
+        alt="Pig League"
+        data-testid="pending-matches-loader-logo"
+      />
+      <p class="matches-card-loader__label">Carregando partidas pendentes...</p>
       <div
-        class="progress-bar progress-bar-striped progress-bar-animated matches-card-loader__bar"
-        style="width: 100%"
-      ></div>
+        class="progress matches-card-loader__progress"
+        role="progressbar"
+        aria-label="Carregamento das partidas pendentes"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <div
+          class="progress-bar progress-bar-striped progress-bar-animated matches-card-loader__bar"
+          style="width: 100%"
+        ></div>
+      </div>
     </div>
-  </div>
-} @else {
-  <div class="matches-list">
-    @for (partida of partidas; track partida.mandante + partida.visitante + $index) {
-      <article class="match-row" [class.match-row--canceled]="isCancelada(partida.status)">
-        <div class="match-row__game" data-testid="match-game">
-          <div class="team">
-            <span class="team__name">{{ partida.mandante }}</span>
-            <span class="team__tag">
-              <img
-                class="team__placeholder-image"
-                src="/assets/img/player-empty.png"
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="team__tag-text">{{ teamTag(partida.mandante) }}</span>
-            </span>
+  } @else {
+    <div class="matches-list">
+      @for (partida of partidas; track partida.mandante + partida.visitante + $index) {
+        <article class="match-row" [class.match-row--canceled]="isCancelada(partida.status)">
+          <div class="match-row__game" data-testid="match-game">
+            <div class="team">
+              <span class="team__name">{{ partida.mandante }}</span>
+              <span class="team__tag">
+                <img
+                  class="team__placeholder-image"
+                  src="/assets/img/player-empty.png"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="team__tag-text">{{ teamTag(partida.mandante) }}</span>
+              </span>
+            </div>
+
+            <div class="score">
+              <span class="score__value">{{ placarMandante(partida) }}</span>
+              <span class="score__versus">VS</span>
+              <span class="score__value">{{ placarVisitante(partida) }}</span>
+            </div>
+
+            <div class="team team--away">
+              <span class="team__tag">
+                <img
+                  class="team__placeholder-image"
+                  src="/assets/img/player-empty.png"
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="team__tag-text">{{ teamTag(partida.visitante) }}</span>
+              </span>
+              <span class="team__name">{{ partida.visitante }}</span>
+            </div>
           </div>
 
-          <div class="score">
-            <span class="score__value">{{ placarMandante(partida) }}</span>
-            <span class="score__versus">VS</span>
-            <span class="score__value">{{ placarVisitante(partida) }}</span>
-          </div>
-
-          <div class="team team--away">
-            <span class="team__tag">
-              <img
-                class="team__placeholder-image"
-                src="/assets/img/player-empty.png"
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="team__tag-text">{{ teamTag(partida.visitante) }}</span>
-            </span>
-            <span class="team__name">{{ partida.visitante }}</span>
-          </div>
-        </div>
-
-        @if (isCancelada(partida.status)) {
-          <div class="status status--canceled" data-testid="match-status-canceled">
-            Cancelado
-          </div>
-        }
-      </article>
-    }
-  </div>
-}
+          @if (isCancelada(partida.status)) {
+            <div class="status status--canceled" data-testid="match-status-canceled">
+              Cancelado
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</article>
