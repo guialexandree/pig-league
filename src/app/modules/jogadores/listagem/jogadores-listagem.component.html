@@ -53,12 +53,7 @@
                   loading="lazy"
                   decoding="async"
                 />
-                <span
-                  class="player-placeholder__initials"
-                  [attr.data-testid]="'player-placeholder-initials-' + jogador.id"
-                >
-                  {{ getPlayerInitials(jogador.nome) }}
-                </span>
+
               </div>
 
               <figcaption class="player-card__header">
@@ -68,23 +63,28 @@
             </figure>
 
             <footer class="player-stats-band" [attr.data-testid]="'player-stats-band-' + jogador.id">
-              <div class="win-gauge" [style.--pl-win-angle]="toWinAngle(jogador.percentualVitoria)">
-                <span class="win-gauge__value">{{ jogador.percentualVitoria }}%</span>
-                <span class="win-gauge__caption">VITORIA</span>
+              <div class="player-stats-band__rating">
+                <span class="player-stats-band__rating-value">{{ jogador.percentualVitoria.toFixed(0) }}</span>
+                <span class="player-stats-band__rating-label">OVR</span>
+                <span class="player-stats-band__rating-subtitle">Vitoria</span>
               </div>
 
-              <ul class="metric-chips">
-                <li class="metric-chip">
-                  <span>Gols</span>
+              <ul class="player-stats-grid">
+                <li class="player-stats-item">
                   <strong>{{ jogador.gols }}</strong>
+                  <span>Gols</span>
                 </li>
-                <li class="metric-chip">
-                  <span>Partidas</span>
+                <li class="player-stats-item">
                   <strong>{{ jogador.partidas }}</strong>
+                  <span>Partidas</span>
                 </li>
-                <li class="metric-chip">
-                  <span>Vitorias</span>
+                <li class="player-stats-item">
                   <strong>{{ jogador.vitorias }}</strong>
+                  <span>Vitorias</span>
+                </li>
+                <li class="player-stats-item">
+                  <strong>{{ formatPercentual(jogador.percentualVitoria) }}</strong>
+                  <span>Aprov.</span>
                 </li>
               </ul>
             </footer>
