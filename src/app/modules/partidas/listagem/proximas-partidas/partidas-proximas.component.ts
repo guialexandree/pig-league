@@ -11,13 +11,7 @@ import { GetPartidasDto, PartidaStatusEnum } from '../../../../data/partida/dto'
   styleUrl: './partidas-proximas.component.scss',
 })
 export class PartidasProximasComponent {
-  readonly titulo = input<string>('PROXIMAS PARTIDAS');
   readonly partidas = input.required<GetPartidasDto[]>();
-
-  readonly tituloFinal = computed<string>(() => {
-    const titulo = this.titulo().trim();
-    return titulo.length > 0 ? titulo : 'PROXIMAS PARTIDAS';
-  });
 
   readonly partidasAgendadas = computed<GetPartidasDto[]>(() =>
     this.partidas().filter((partida) => partida.status === PartidaStatusEnum.AGENDADA),

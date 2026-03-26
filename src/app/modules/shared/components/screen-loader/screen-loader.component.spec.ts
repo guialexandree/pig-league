@@ -30,10 +30,14 @@ describe(ScreenLoaderComponent.name, () => {
     const root = fixture.nativeElement as HTMLElement;
     const loader = root.querySelector('[data-testid="classification-screen-loader"]');
     const label = root.querySelector('[data-testid="classification-loader-label"]');
+    const progress = root.querySelector('[data-testid="classification-loader-progress"]');
+    const progressBar = root.querySelector('[data-testid="classification-loader-progress-bar"]');
 
     expect(loader?.getAttribute('aria-live')).toBe('polite');
     expect(loader?.getAttribute('aria-busy')).toBe('true');
     expect(label?.textContent?.trim()).toBe('Carregando classificacoes...');
+    expect(progress).not.toBeNull();
+    expect(progressBar).not.toBeNull();
   });
 
   it('deve aplicar fallback de logo quando ocorrer erro de carregamento', () => {

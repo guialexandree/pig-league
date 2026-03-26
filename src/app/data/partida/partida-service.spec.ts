@@ -65,6 +65,38 @@ describe(PartidaService.name, () => {
     req.flush(response);
   });
 
+  it('deve buscar partidas pendentes em /campeonato/partidas-pendentes', () => {
+    const response: GetPartidasDto[] = [generateGetPartidasDto()];
+
+    let actual: GetPartidasDto[] | undefined;
+
+    service.getPartidasPendentes().subscribe((payload) => {
+      actual = payload;
+    });
+
+    const req = httpMock.expectOne(
+      (request) => request.url.endsWith('/campeonato/partidas-pendentes'),
+    );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.keys().length).toBe(0);
+    req.flush(response);
+
+    expect(actual).toEqual(response);
+  });
+
+  it('deve serializar grupoId ao buscar partidas pendentes com filtro', () => {
+    const grupoId = faker.number.int({ min: 1, max: 2 });
+
+    service.getPartidasPendentes({ grupoId }).subscribe();
+
+    const req = httpMock.expectOne(
+      (request) => request.url.endsWith('/campeonato/partidas-pendentes'),
+    );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('grupoId')).toBe(String(grupoId));
+    req.flush([]);
+  });
+
   it('deve buscar partidas realizadas em /campeonato/partidas-realizadas', () => {
     const response: GetPartidasRealizadasDto[] = [
       generateGetPartidasRealizadasDto(),

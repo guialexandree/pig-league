@@ -1,41 +1,61 @@
 .pl-screen-loader {
   position: fixed;
   inset: 0;
-  z-index: 1200;
-  display: grid;
-  place-items: center;
-  gap: 0.9rem;
-  text-align: center;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background:
     radial-gradient(circle at 50% 35%, rgb(139 92 246 / 22%), transparent 48%),
     rgb(5 6 9 / 84%);
   backdrop-filter: blur(6px);
 }
 
+.pl-screen-loader__content {
+  display: grid;
+  place-items: center;
+  gap: 0.75rem;
+  width: min(320px, calc(100vw - 2rem));
+  padding: 1.4rem 1rem 1.6rem;
+  text-align: center;
+}
+
 .pl-screen-loader__logo {
-  width: clamp(80px, 10vw, 124px);
+  width: clamp(72px, 8vw, 112px);
   height: auto;
-  animation: pulse-logo 1.25s ease-in-out infinite;
+  animation: pulse-logo 1.15s ease-in-out infinite;
 }
 
 .pl-screen-loader__label {
   margin: 0;
   color: rgb(234 236 242 / 92%);
-  font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.pl-screen-loader__progress {
+  width: min(280px, 100%);
+  height: 0.42rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 12%);
+  overflow: hidden;
+}
+
+.pl-screen-loader__progress-bar {
+  background: linear-gradient(90deg, rgb(161 112 255), rgb(249 186 72));
 }
 
 @keyframes pulse-logo {
   0%,
   100% {
-    transform: scale(0.96);
-    opacity: 0.75;
+    transform: scale(0.9);
+    opacity: 0.72;
   }
 
   50% {
-    transform: scale(1.03);
+    transform: scale(1.02);
     opacity: 1;
   }
 }

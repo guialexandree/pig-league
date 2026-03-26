@@ -2,9 +2,9 @@
   --board-bg: #12081d;
   --board-line: rgb(178 116 255 / 12%);
   display: grid;
-  grid-template-columns: repeat(3, minmax(220px, 360px));
-  justify-content: end;
-  gap: 0.7rem;
+  grid-template-columns: repeat(3, minmax(220px, 260px));
+  justify-content: center;
+  gap: 2rem;
 }
 
 .totais__item {

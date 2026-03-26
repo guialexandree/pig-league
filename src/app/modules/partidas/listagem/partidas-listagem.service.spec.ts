@@ -14,9 +14,18 @@ describe(PartidasListagemService.name, () => {
     faker.seed(20260325);
   });
 
-  it('deve buscar partidas uma unica vez e aplicar filtro local por grupo', () => {
-    const payload = createResponsePayload();
-    const partidaServiceMock = createPartidaServiceMock(payload);
+  it('deve buscar partidas pendentes na API e reaplicar filtro por grupo na API', () => {
+    const geralPayload = createResponsePayload();
+    const grupo1Payload = [createPartidaItem({ grupo: 'GRUPO 1' })];
+    const grupo2Payload = [createPartidaItem({ grupo: 'GRUPO 2' })];
+
+    const partidaServiceMock: Pick<PartidaService, 'getPartidasPendentes'> = {
+      getPartidasPendentes: vi
+        .fn()
+        .mockReturnValueOnce(of(geralPayload))
+        .mockReturnValueOnce(of(grupo1Payload))
+        .mockReturnValueOnce(of(grupo2Payload)),
+    };
 
     TestBed.configureTestingModule({
       providers: [
@@ -30,20 +39,24 @@ describe(PartidasListagemService.name, () => {
     service.carregarDados();
     service.selecionarFiltro(PartidaGrupoEnum.GRUPO_1);
     service.selecionarFiltro(PartidaGrupoEnum.GRUPO_2);
-    service.selecionarFiltro(PartidaGrupoEnum.GRUPO_1);
+    service.selecionarFiltro(PartidaGrupoEnum.GRUPO_2);
 
-    expect(partidaServiceMock.getPartidas).toHaveBeenCalledTimes(1);
-    expect(partidaServiceMock.getPartidas).toHaveBeenCalledWith(undefined);
-    expect(service.partidas().length).toBe(payload.length);
-    expect(service.partidasFiltradas().every((partida) => partida.grupo.includes('1'))).toBe(
-      true,
-    );
+    expect(partidaServiceMock.getPartidasPendentes).toHaveBeenCalledTimes(3);
+    expect(partidaServiceMock.getPartidasPendentes).toHaveBeenNthCalledWith(1, {});
+    expect(partidaServiceMock.getPartidasPendentes).toHaveBeenNthCalledWith(2, {
+      grupoId: PartidaGrupoEnum.GRUPO_1,
+    });
+    expect(partidaServiceMock.getPartidasPendentes).toHaveBeenNthCalledWith(3, {
+      grupoId: PartidaGrupoEnum.GRUPO_2,
+    });
+    expect(service.filtroSelecionado()).toBe(PartidaGrupoEnum.GRUPO_2);
+    expect(service.partidas()).toEqual(grupo2Payload);
   });
 
   it('deve preencher erro quando a busca falhar e permitir retry', () => {
     const payload = createResponsePayload();
-    const partidaServiceMock: Pick<PartidaService, 'getPartidas'> = {
-      getPartidas: vi
+    const partidaServiceMock: Pick<PartidaService, 'getPartidasPendentes'> = {
+      getPartidasPendentes: vi
         .fn()
         .mockReturnValueOnce(throwError(() => new Error('falha')))
         .mockReturnValueOnce(of(payload)),
@@ -65,19 +78,13 @@ describe(PartidasListagemService.name, () => {
 
     service.tentarNovamente();
 
-    expect(partidaServiceMock.getPartidas).toHaveBeenCalledTimes(2);
+    expect(partidaServiceMock.getPartidasPendentes).toHaveBeenCalledTimes(2);
+    expect(partidaServiceMock.getPartidasPendentes).toHaveBeenNthCalledWith(1, {});
+    expect(partidaServiceMock.getPartidasPendentes).toHaveBeenNthCalledWith(2, {});
     expect(service.erro()).toBeNull();
     expect(service.partidas().length).toBe(payload.length);
   });
 });
-
-function createPartidaServiceMock(
-  payload: GetPartidasDto[] = createResponsePayload(),
-): Pick<PartidaService, 'getPartidas'> {
-  return {
-    getPartidas: vi.fn().mockReturnValue(of(payload)),
-  };
-}
 
 function createResponsePayload(): GetPartidasDto[] {
   return [

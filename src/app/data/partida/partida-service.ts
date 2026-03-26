@@ -14,6 +14,8 @@ import { environment } from '@/environments/environment';
 })
 export class PartidaService {
   private readonly path = `${environment.apiUrl}/campeonato/partidas`;
+  private readonly pathPartidasPendentes =
+    `${environment.apiUrl}/campeonato/partidas-pendentes`;
   private readonly pathPartidasRealizadas =
     `${environment.apiUrl}/campeonato/partidas-realizadas`;
 
@@ -21,6 +23,14 @@ export class PartidaService {
 
   getPartidas(filters?: GetPartidasFiltrosDto): Observable<GetPartidasDto[]> {
     return this.http.get<GetPartidasDto[]>(this.path, {
+      params: this.mapFiltrosToParams(filters),
+    });
+  }
+
+  getPartidasPendentes(
+    filters?: GetPartidasFiltrosDto,
+  ): Observable<GetPartidasDto[]> {
+    return this.http.get<GetPartidasDto[]>(this.pathPartidasPendentes, {
       params: this.mapFiltrosToParams(filters),
     });
   }

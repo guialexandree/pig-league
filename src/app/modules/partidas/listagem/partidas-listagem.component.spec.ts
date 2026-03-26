@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { computed, signal } from '@angular/core';
+import { signal } from '@angular/core';
 import { faker } from '@faker-js/faker';
 import { of, throwError } from 'rxjs';
 import { GetPartidasDto } from '../../../data/partida/dto/get-partidas.dto';
@@ -29,8 +29,8 @@ describe(PartidasListagemComponent.name, () => {
     const fixture = TestBed.createComponent(PartidasListagemComponent);
     fixture.detectChanges();
 
-    expect(listagemServiceMock.carregar).toHaveBeenCalledTimes(1);
-    expect(partidaServiceMock.getPartidas).not.toHaveBeenCalled();
+    expect(listagemServiceMock.carregarDados).toHaveBeenCalledTimes(1);
+    expect(partidaServiceMock.getPartidasPendentes).not.toHaveBeenCalled();
   });
 
   it('deve renderizar o subcomponente de proximas partidas', () => {
@@ -118,9 +118,33 @@ describe(PartidasListagemComponent.name, () => {
 
     const root = fixture.nativeElement as HTMLElement;
 
-    expect(root.querySelector('.matches-card__title')?.textContent?.trim()).toBe('PARTIDAS GERAL');
+    expect(root.querySelector('.matches-card__title')?.textContent?.trim()).toBe('PARTIDAS PENDENTES');
     expect(root.querySelector('[data-testid="match-date"]')).toBeNull();
     expect(root.querySelector('[data-testid="match-time"]')).toBeNull();
+  });
+
+  it('deve exibir loader local com logo e progress apenas no filtro geral quando estiver carregando', () => {
+    const listagemServiceMock = createListagemServiceMock();
+    const partidaServiceMock = createServiceMock();
+    listagemServiceMock.carregando.set(true);
+
+    TestBed.configureTestingModule({
+      imports: [PartidasListagemComponent],
+      providers: [
+        { provide: PartidasListagemService, useValue: listagemServiceMock },
+        { provide: PartidaService, useValue: partidaServiceMock },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(PartidasListagemComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('[data-testid="pending-matches-loader"]')).not.toBeNull();
+    expect(root.querySelector('[data-testid="pending-matches-loader-logo"]')).not.toBeNull();
+    expect(root.querySelector('.matches-card-loader__progress .progress-bar')).not.toBeNull();
+    expect(root.querySelector('app-screen-loader')).toBeNull();
   });
 
   it('deve renderizar o subcomponente /partidas-realizadas acima das proximas partidas', () => {
@@ -195,13 +219,16 @@ describe(PartidasListagemComponent.name, () => {
     filterButton.click();
     fixture.detectChanges();
 
-    expect(serviceMock.getPartidas).toHaveBeenCalledTimes(1);
+    expect(serviceMock.getPartidasPendentes).toHaveBeenCalledTimes(2);
   });
 
   it('deve permitir tentar novamente quando ocorrer erro ao carregar partidas', () => {
     const payload = createResponsePayload();
-    const serviceMock: Pick<PartidaService, 'getPartidas' | 'getPartidasRealizadas'> = {
-      getPartidas: vi
+    const serviceMock: Pick<
+      PartidaService,
+      'getPartidasPendentes' | 'getPartidasRealizadas'
+    > = {
+      getPartidasPendentes: vi
         .fn()
         .mockReturnValueOnce(throwError(() => new Error('falha de rede')))
         .mockReturnValueOnce(of(payload)),
@@ -226,7 +253,7 @@ describe(PartidasListagemComponent.name, () => {
     retryButton.click();
     fixture.detectChanges();
 
-    expect(serviceMock.getPartidas).toHaveBeenCalledTimes(2);
+    expect(serviceMock.getPartidasPendentes).toHaveBeenCalledTimes(2);
     expect(root.querySelector('[data-testid="error-state"]')).toBeNull();
     expect(root.querySelectorAll('[data-testid="match-game"]').length).toBeGreaterThan(0);
   });
@@ -234,9 +261,9 @@ describe(PartidasListagemComponent.name, () => {
 
 function createServiceMock(
   payload?: GetPartidasDto[],
-): Pick<PartidaService, 'getPartidas' | 'getPartidasRealizadas'> {
+): Pick<PartidaService, 'getPartidasPendentes' | 'getPartidasRealizadas'> {
   return {
-    getPartidas: vi.fn().mockReturnValue(of(payload ?? createResponsePayload())),
+    getPartidasPendentes: vi.fn().mockReturnValue(of(payload ?? createResponsePayload())),
     getPartidasRealizadas: vi.fn().mockReturnValue(of(payload ?? createResponsePayload())),
   };
 }
@@ -255,7 +282,6 @@ function createListagemServiceMock() {
     erro,
     filtroSelecionado,
     partidas,
-    partidasFiltradas: computed(() => partidas()),
   } satisfies Pick<
     PartidasListagemService,
     | 'carregarDados'
@@ -265,7 +291,6 @@ function createListagemServiceMock() {
     | 'erro'
     | 'filtroSelecionado'
     | 'partidas'
-    | 'partidasFiltradas'
   >;
 }
 

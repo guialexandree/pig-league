@@ -1,6 +1,10 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize } from 'rxjs';
-import { GetPartidasDto, PartidaGrupoEnum } from '../../../data/partida/dto';
+import {
+  GetPartidasDto,
+  GetPartidasFiltrosDto,
+  PartidaGrupoEnum,
+} from '../../../data/partida/dto';
 import { PartidaService } from '../../../data/partida/partida-service';
 
 export type PartidasFiltroUi = 'GERAL' | PartidaGrupoEnum;
@@ -13,53 +17,45 @@ export class PartidasListagemService {
 
   readonly carregando = signal<boolean>(false);
   readonly erro = signal<string | null>(null);
-  readonly filtroSelecionado = signal<PartidasFiltroUi>('GERAL');
 
+  private readonly _query = signal<GetPartidasFiltrosDto>({});
   private readonly _partidas = signal<GetPartidasDto[] | null>(null);
 
+  readonly filtroSelecionado = computed<PartidasFiltroUi>(
+    () => this._query().grupoId ?? 'GERAL',
+  );
   readonly partidas = computed<GetPartidasDto[]>(() => this._partidas() ?? []);
-
-  readonly partidasFiltradas = computed<GetPartidasDto[]>(() => {
-    const filtroSelecionado = this.filtroSelecionado();
-    const partidas = this.partidas();
-
-    if (filtroSelecionado === 'GERAL') {
-      return partidas;
-    }
-
-    return partidas.filter((partida) => this.extrairNumeroGrupo(partida.grupo) === filtroSelecionado);
-  });
 
   carregarDados(): void {
     if (this._partidas() !== null || this.carregando()) {
       return;
     }
 
-    this.carregando.set(true);
-    this.erro.set(null);
-
-    this.partidaService
-      .getPartidas(undefined)
-      .pipe(finalize(() => this.carregando.set(false)))
-      .subscribe({
-        next: (resposta) => this._partidas.set(resposta),
-        error: () => {
-          this._partidas.set(null);
-          this.erro.set('Nao foi possivel carregar as partidas no momento.');
-        },
-      });
+    this.buscarPartidasPendentes();
   }
 
   selecionarFiltro(filter: PartidasFiltroUi): void {
-    this.filtroSelecionado.set(filter);
+    const nextQuery = this.mapFiltroToQuery(filter);
+
+    if (this.isSameQuery(nextQuery)) {
+      return;
+    }
+
+    this._query.set(nextQuery);
+    this.buscarPartidasPendentes();
   }
 
   tentarNovamente(): void {
+    this.buscarPartidasPendentes();
+  }
+
+  private buscarPartidasPendentes(): void {
     this.carregando.set(true);
+    this._partidas.set(null);
     this.erro.set(null);
 
     this.partidaService
-      .getPartidas(undefined)
+      .getPartidasPendentes(this._query())
       .pipe(finalize(() => this.carregando.set(false)))
       .subscribe({
         next: (resposta) => this._partidas.set(resposta),
@@ -70,12 +66,15 @@ export class PartidasListagemService {
       });
   }
 
-  private extrairNumeroGrupo(grupo: string): number | null {
-    const match = grupo.match(/\d+/);
-    if (!match?.[0]) {
-      return null;
+  private mapFiltroToQuery(filter: PartidasFiltroUi): GetPartidasFiltrosDto {
+    if (filter === 'GERAL') {
+      return {};
     }
 
-    return Number(match[0]);
+    return { grupoId: filter };
+  }
+
+  private isSameQuery(nextQuery: GetPartidasFiltrosDto): boolean {
+    return this._query().grupoId === nextQuery.grupoId;
   }
 }

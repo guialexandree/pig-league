@@ -15,20 +15,17 @@
       />
     </div>
 
-    <div class="matches-completed">
+    <div class="matches-completed mt-5">
       <app-partidas-realizadas  />
     </div>
 
-    @if (service.partidasFiltradas().length <= 0) {
+    @if (service.partidas().length <= 0) {
       <div class="matches-upcoming">
-        <app-partidas-proximas
-          [titulo]="'PROXIMAS PARTIDAS'"
-          [partidas]="service.partidasFiltradas()"
-        />
+        <app-partidas-proximas [partidas]="service.partidas()"/>
       </div>
     }
 
-    <div class="matches-toolbar">
+    <div class="matches-toolbar mt-5">
       <div class="matches-toolbar__filters" role="group" aria-label="Filtros de grupo">
         @for (filtro of filtros; track filtro.value) {
           <button
@@ -44,15 +41,16 @@
       </div>
     </div>
 
-    <article class="matches-card">
+    <article
+      class="matches-card"
+      [class.matches-card--loading]="service.carregando()"
+    >
       <header class="matches-card__head">
         <h3 class="matches-card__title">PARTIDAS PENDENTES</h3>
         <span>JOGO</span>
       </header>
 
-      @if (service.carregando()) {
-        <app-screen-loader [visible]="true" message="Carregando partidas..." testIdPrefix="matches" />
-      } @else if (service.erro(); as mensagemErro) {
+      @if (service.erro(); as mensagemErro) {
         <div
           class="matches-feedback matches-feedback--error"
           data-testid="error-state"
@@ -73,60 +71,15 @@
             Tentar novamente
           </button>
         </div>
-      } @else if (service.partidasFiltradas().length === 0) {
+      } @else if (service.partidas().length === 0 && !service.carregando()) {
         <div class="matches-feedback" data-testid="empty-state">
           Nenhuma partida encontrada para este filtro.
         </div>
       } @else {
-        <div class="matches-list">
-          @for (partida of service.partidasFiltradas(); track partida.mandante + partida.visitante + $index) {
-            <article class="match-row" [class.match-row--canceled]="isCancelada(partida.status)">
-              <div class="match-row__game" data-testid="match-game">
-                <div class="team">
-                  <span class="team__name">{{ partida.mandante }}</span>
-                  <span class="team__tag">
-                    <img
-                      class="team__placeholder-image"
-                      src="/assets/img/player-empty.png"
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <span class="team__tag-text">{{ teamTag(partida.mandante) }}</span>
-                  </span>
-                </div>
-
-                <div class="score">
-                  <span class="score__value">{{ placarMandante(partida) }}</span>
-                  <span class="score__versus">VS</span>
-                  <span class="score__value">{{ placarVisitante(partida) }}</span>
-                </div>
-
-                <div class="team team--away">
-                  <span class="team__tag">
-                    <img
-                      class="team__placeholder-image"
-                      src="/assets/img/player-empty.png"
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <span class="team__tag-text">{{ teamTag(partida.visitante) }}</span>
-                  </span>
-                  <span class="team__name">{{ partida.visitante }}</span>
-                </div>
-              </div>
-
-              @if (isCancelada(partida.status)) {
-                <div class="status status--canceled" data-testid="match-status-canceled">
-                  Cancelado
-                </div>
-              }
-            </article>
-          }
-        </div>
+        <app-partidas-pendentes
+          [partidas]="service.partidas()"
+          [isLoading]="service.carregando()"
+        />
       }
     </article>
   </section>

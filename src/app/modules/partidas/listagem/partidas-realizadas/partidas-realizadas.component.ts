@@ -13,7 +13,6 @@ import { PartidasRealizadasService } from './partidas-realizadas.service';
   styleUrl: './partidas-realizadas.component.scss',
 })
 export class PartidasRealizadasComponent implements OnInit {
-
   readonly dataService = inject(PartidasRealizadasService);
 
   readonly slides = computed<GetPartidasRealizadasDto[][]>(() =>
@@ -44,6 +43,17 @@ export class PartidasRealizadasComponent implements OnInit {
 
   placarVisitante(partida: GetPartidasRealizadasDto): string {
     return partida.golsVisitante === null ? '--' : String(partida.golsVisitante);
+  }
+
+  teamTag(nomeTime: string): string {
+    const letters = nomeTime
+      .split(/\s+/)
+      .filter((chunk) => chunk.trim().length > 0)
+      .slice(0, 2)
+      .map((chunk) => chunk[0]?.toUpperCase() ?? '')
+      .join('');
+
+    return letters || 'PL';
   }
 
   private chunk(

@@ -1,12 +1,11 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
-import { GetPartidasDto, PartidaGrupoEnum, PartidaStatusEnum } from '../../../data/partida/dto';
+import { PartidaGrupoEnum, PartidaStatusEnum } from '../../../data/partida/dto';
 import { ListagemHeaderComponent } from '../../shared/components/listagem-header/listagem-header.component';
-import { ScreenLoaderComponent } from '../../shared/components/screen-loader/screen-loader.component';
+import { PartidasPendentesComponent } from './partidas-pendentes/partidas-pendentes.component';
 import { PartidasProximasComponent } from './proximas-partidas/partidas-proximas.component';
 import { PartidasRealizadasComponent } from './partidas-realizadas/partidas-realizadas.component';
 import { PartidasFiltroUi, PartidasListagemService } from './partidas-listagem.service';
 import { PartidasTotaisComponent } from './totais/partidas-totais.component';
-import { AsyncPipe } from '@angular/common';
 
 interface FiltroPartidaItem {
   label: string;
@@ -19,11 +18,10 @@ interface FiltroPartidaItem {
   standalone: true,
   imports: [
     ListagemHeaderComponent,
-    ScreenLoaderComponent,
     PartidasRealizadasComponent,
     PartidasProximasComponent,
+    PartidasPendentesComponent,
     PartidasTotaisComponent,
-    AsyncPipe,
   ],
   templateUrl: './partidas-listagem.component.html',
   styleUrl: './partidas-listagem.component.scss',
@@ -68,28 +66,5 @@ export class PartidasListagemComponent implements OnInit {
 
   tentarNovamente(): void {
     this.service.tentarNovamente();
-  }
-
-  isCancelada(status: PartidaStatusEnum): boolean {
-    return status === PartidaStatusEnum.CANCELADA;
-  }
-
-  placarMandante(partida: GetPartidasDto): string {
-    return partida.golsMandante === null ? '--' : String(partida.golsMandante);
-  }
-
-  placarVisitante(partida: GetPartidasDto): string {
-    return partida.golsVisitante === null ? '--' : String(partida.golsVisitante);
-  }
-
-  teamTag(nomeTime: string): string {
-    const letters = nomeTime
-      .split(/\s+/)
-      .filter((chunk) => chunk.trim().length > 0)
-      .slice(0, 2)
-      .map((chunk) => chunk[0]?.toUpperCase() ?? '')
-      .join('');
-
-    return letters || 'PL';
   }
 }

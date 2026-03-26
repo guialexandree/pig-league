@@ -5,16 +5,33 @@
     aria-live="polite"
     aria-busy="true"
   >
-    @if (showLogo) {
-      <img
-        [src]="logoSrc"
-        [alt]="logoAlt"
-        class="pl-screen-loader__logo"
-        [attr.data-testid]="testIdPrefix + '-loader-logo'"
-        (error)="onLogoError($event)"
-      />
-    }
+    <div class="pl-screen-loader__content">
+      @if (showLogo) {
+        <img
+          [src]="logoSrc"
+          [alt]="logoAlt"
+          class="pl-screen-loader__logo"
+          [attr.data-testid]="testIdPrefix + '-loader-logo'"
+          (error)="onLogoError($event)"
+        />
+      }
 
-    <p class="pl-screen-loader__label" [attr.data-testid]="testIdPrefix + '-loader-label'">{{ message }}</p>
+      <p class="pl-screen-loader__label" [attr.data-testid]="testIdPrefix + '-loader-label'">{{ message }}</p>
+
+      <div
+        class="progress pl-screen-loader__progress"
+        [attr.data-testid]="testIdPrefix + '-loader-progress'"
+        role="progressbar"
+        aria-label="Carregamento em andamento"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <div
+          class="progress-bar progress-bar-striped progress-bar-animated pl-screen-loader__progress-bar"
+          [attr.data-testid]="testIdPrefix + '-loader-progress-bar'"
+          style="width: 100%"
+        ></div>
+      </div>
+    </div>
   </div>
 }

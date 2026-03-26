@@ -77,6 +77,11 @@
   overflow: hidden;
 }
 
+.matches-card--loading {
+  position: relative;
+  z-index: 5;
+}
+
 .matches-card__head {
   display: flex;
   align-items: center;
@@ -169,122 +174,6 @@
   transform: translateY(-1px);
 }
 
-.matches-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-  padding: 0.72rem;
-}
-
-.match-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.5rem;
-  align-items: center;
-  border-radius: 0.72rem;
-  background: linear-gradient(145deg, rgb(31 34 39 / 74%), rgb(22 24 28 / 74%));
-  border: 1px solid rgb(255 255 255 / 8%);
-  padding: 0.85rem 1rem;
-}
-
-.match-row--canceled {
-  grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.match-row__game {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 0.6rem;
-  align-items: center;
-}
-
-.team {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.42rem;
-  min-width: 0;
-}
-
-.team--away {
-  justify-content: flex-start;
-}
-
-.team__tag {
-  position: relative;
-  overflow: hidden;
-  display: inline-grid;
-  place-items: center;
-  width: 31px;
-  height: 31px;
-  border-radius: 999px;
-  border: 1px solid rgb(139 92 246 / 46%);
-  background: rgb(139 92 246 / 12%);
-  color: #cfb5ff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.team__placeholder-image {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  opacity: 0.86;
-  filter: saturate(0.82) contrast(1.06);
-}
-
-.team__tag-text {
-  position: relative;
-  z-index: 1;
-}
-
-.team__name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: rgb(232 235 241 / 92%);
-}
-
-.score {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.48rem;
-  padding-inline: 0.35rem;
-}
-
-.score__value {
-  font-family: 'Oxanium', sans-serif;
-  font-size: 1.28rem;
-  font-weight: 700;
-  color: var(--pl-accent-strong);
-  min-width: 24px;
-  text-align: center;
-}
-
-.score__versus {
-  font-size: 0.78rem;
-  letter-spacing: 0.05em;
-  color: rgb(255 255 255 / 42%);
-}
-
-.status {
-  justify-self: end;
-  border-radius: 999px;
-  padding: 0.32rem 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  font-size: 0.78rem;
-}
-
-.status--canceled {
-  color: #ff9393;
-  background: rgb(145 35 35 / 24%);
-}
-
 @media (max-width: 991.98px) {
   .matches-totals-wrap {
     margin-top: -2.25rem;
@@ -292,30 +181,6 @@
 
   .matches-card__head {
     display: none;
-  }
-
-  .match-row {
-    grid-template-columns: 1fr;
-    gap: 0.58rem;
-  }
-
-  .match-row--canceled {
-    grid-template-columns: 1fr;
-  }
-
-  .match-row__game {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    gap: 0.36rem;
-  }
-
-  .team,
-  .team--away {
-    justify-content: flex-start;
-  }
-
-  .status {
-    justify-self: flex-end;
   }
 
   .matches-feedback--error {
