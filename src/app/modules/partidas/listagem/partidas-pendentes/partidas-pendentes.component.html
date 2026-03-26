@@ -3,8 +3,14 @@
   [class.matches-card--loading]="isLoading"
 >
   <header class="matches-card__head">
-    <h3 class="matches-card__title">PARTIDAS PENDENTES</h3>
-    <span>JOGO</span>
+    <img
+      src="/assets/img/controle.png"
+      alt=""
+      height="40"
+      aria-hidden="true"
+      decoding="async"
+    />
+    <h3 class="matches-card__title">PROXIMOS CONFRONTOS</h3>
   </header>
 
   @if (isLoading) {
