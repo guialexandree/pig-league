@@ -84,7 +84,12 @@ export class ClassificacaoListagemService {
       classificacaoByGrupo.set(numeroGrupo, classificacaoGrupo);
     }
 
-    return classificacaoByGrupo;
+    return new Map(
+      Array.from(classificacaoByGrupo.entries()).map(([numeroGrupo, itensGrupo]) => [
+        numeroGrupo,
+        this.reindexarPosicaoGrupo(itensGrupo),
+      ]),
+    );
   }
 
   private extrairNumeroGrupo(grupo: string): number | null {
@@ -104,5 +109,14 @@ export class ClassificacaoListagemService {
     const jogosEsperados = classificacao.length - 1;
 
     return classificacao.every((item) => item.jogos >= jogosEsperados);
+  }
+
+  private reindexarPosicaoGrupo(
+    classificacaoGrupo: GetClassificacaoDto[],
+  ): GetClassificacaoDto[] {
+    return classificacaoGrupo.map((item, index) => ({
+      ...item,
+      posicao: index + 1,
+    }));
   }
 }

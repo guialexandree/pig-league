@@ -7,10 +7,11 @@
     <header class="classification-card__head">
       <span>POSICAO</span>
       <span>TIME</span>
-      <span>V - D</span>
+      <span>V - E - D</span>
       <span>GP</span>
       <span>GC</span>
       <span>SG</span>
+      <span>P</span>
     </header>
 
     @if (carregando) {
@@ -63,11 +64,14 @@
             </div>
 
             <div class="classification-row__metric" data-testid="record">
-              {{ recordLabel(item.vitorias, item.derrotas) }}
+              {{ recordLabel(item.vitorias, item.empates, item.derrotas) }}
             </div>
             <div class="classification-row__metric" data-testid="goals-for">{{ item.golsPositivo }}</div>
             <div class="classification-row__metric" data-testid="goals-against">{{ item.golsContra }}</div>
             <div class="classification-row__metric" data-testid="goal-diff">{{ item.saldoGols }}</div>
+            <div class="classification-row__metric classification-row__metric--points" data-testid="points">
+              {{ item.pontos }}
+            </div>
           </article>
         }
       </div>

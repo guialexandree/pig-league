@@ -18,8 +18,8 @@ export class ClassificacaoGrupoComponent {
 
   @Output() readonly recarregar = new EventEmitter<void>();
 
-  recordLabel(vitorias: number, derrotas: number): string {
-    return `${vitorias} - ${derrotas}`;
+  recordLabel(vitorias: number, empates: number, derrotas: number): string {
+    return `${vitorias} - ${empates} - ${derrotas}`;
   }
 
   teamTag(nomeTime: string): string {

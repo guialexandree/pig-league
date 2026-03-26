@@ -44,7 +44,7 @@
 
 .classification-card__head {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) repeat(4, 80px);
+  grid-template-columns: 96px minmax(0, 1fr) repeat(5, 80px);
   gap: 0.8rem;
   padding: 0.85rem 1rem;
   color: rgb(214 219 228 / 60%);
@@ -110,7 +110,7 @@
 .classification-row {
   position: relative;
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) repeat(4, 80px);
+  grid-template-columns: 96px minmax(0, 1fr) repeat(5, 80px);
   gap: 0.8rem;
   align-items: center;
   border-radius: 0.72rem;
@@ -212,6 +212,11 @@
   text-align: right;
 }
 
+.classification-row__metric--points {
+  color: rgb(181 132 255 / 98%);
+  text-shadow: 0 0 10px rgb(150 88 255 / 32%);
+}
+
 .classification-card__legend {
   display: flex;
   align-items: center;
@@ -249,14 +254,14 @@
   }
 
   .classification-card__head {
-    grid-template-columns: 72px minmax(0, 1fr) repeat(4, 62px);
+    grid-template-columns: 72px minmax(0, 1fr) repeat(5, 62px);
     gap: 0.4rem;
     padding-inline: 0.7rem;
     font-size: 0.76rem;
   }
 
   .classification-row {
-    grid-template-columns: 72px minmax(0, 1fr) repeat(4, 62px);
+    grid-template-columns: 72px minmax(0, 1fr) repeat(5, 62px);
     gap: 0.4rem;
     padding-inline: 0.7rem;
   }
@@ -292,6 +297,6 @@
 
   .classification-card__head,
   .classification-list {
-    min-width: 620px;
+    min-width: 700px;
   }
 }
