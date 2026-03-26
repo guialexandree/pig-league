@@ -95,7 +95,7 @@ describe(PartidasListagemComponent.name, () => {
     expect(root.querySelector('[data-testid="totais-total-pendente"]')?.textContent?.trim()).toBe('2');
   });
 
-  it('deve exibir data e horario em colunas separadas', () => {
+  it('deve exibir title de partidas geral sem colunas de data e horario', () => {
     const serviceMock = createServiceMock([
       {
         grupo: 'GRUPO 1',
@@ -117,25 +117,14 @@ describe(PartidasListagemComponent.name, () => {
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
-    const data = root.querySelector('[data-testid="match-date"]')?.textContent;
-    const horario = root.querySelector('[data-testid="match-time"]')?.textContent;
 
-    expect(data?.trim()).toBe('08/03/26');
-    expect(horario?.trim()).toBe('21:00');
+    expect(root.querySelector('.matches-card__title')?.textContent?.trim()).toBe('PARTIDAS GERAL');
+    expect(root.querySelector('[data-testid="match-date"]')).toBeNull();
+    expect(root.querySelector('[data-testid="match-time"]')).toBeNull();
   });
 
-  it('deve exibir "Nao agendado" na coluna de horario quando o status nao for agendado', () => {
-    const serviceMock = createServiceMock([
-      {
-        grupo: 'GRUPO 1',
-        dataHora: null,
-        mandante: faker.company.name(),
-        golsMandante: null,
-        golsVisitante: null,
-        visitante: faker.company.name(),
-        status: PartidaStatusEnum.NAO_AGENDADA,
-      },
-    ]);
+  it('deve renderizar o subcomponente /partidas-realizadas acima das proximas partidas', () => {
+    const serviceMock = createServiceMock();
 
     TestBed.configureTestingModule({
       imports: [PartidasListagemComponent],
@@ -146,10 +135,8 @@ describe(PartidasListagemComponent.name, () => {
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
-    const horario = root.querySelector('[data-testid="match-time"]');
-
-    expect(horario?.textContent?.trim()).toBe('Nao agendado');
-    expect(root.querySelector('[data-testid="match-status-canceled"]')).toBeNull();
+    expect(root.querySelector('app-partidas-realizadas')).not.toBeNull();
+    expect(root.textContent).toContain('/partidas-realizadas');
   });
 
   it('deve exibir badge no final da linha apenas para partida cancelada', () => {
@@ -213,11 +200,12 @@ describe(PartidasListagemComponent.name, () => {
 
   it('deve permitir tentar novamente quando ocorrer erro ao carregar partidas', () => {
     const payload = createResponsePayload();
-    const serviceMock: Pick<PartidaService, 'getPartidas'> = {
+    const serviceMock: Pick<PartidaService, 'getPartidas' | 'getPartidasRealizadas'> = {
       getPartidas: vi
         .fn()
         .mockReturnValueOnce(throwError(() => new Error('falha de rede')))
         .mockReturnValueOnce(of(payload)),
+      getPartidasRealizadas: vi.fn().mockReturnValue(of(payload)),
     };
 
     TestBed.configureTestingModule({
@@ -240,13 +228,16 @@ describe(PartidasListagemComponent.name, () => {
 
     expect(serviceMock.getPartidas).toHaveBeenCalledTimes(2);
     expect(root.querySelector('[data-testid="error-state"]')).toBeNull();
-    expect(root.querySelector('[data-testid="match-date"]')?.textContent?.trim()).toBe('08/03/26');
+    expect(root.querySelectorAll('[data-testid="match-game"]').length).toBeGreaterThan(0);
   });
 });
 
-function createServiceMock(payload?: GetPartidasDto[]): Pick<PartidaService, 'getPartidas'> {
+function createServiceMock(
+  payload?: GetPartidasDto[],
+): Pick<PartidaService, 'getPartidas' | 'getPartidasRealizadas'> {
   return {
     getPartidas: vi.fn().mockReturnValue(of(payload ?? createResponsePayload())),
+    getPartidasRealizadas: vi.fn().mockReturnValue(of(payload ?? createResponsePayload())),
   };
 }
 
@@ -257,7 +248,7 @@ function createListagemServiceMock() {
   const partidas = signal<GetPartidasDto[]>(createResponsePayload());
 
   return {
-    carregar: vi.fn(),
+    carregarDados: vi.fn(),
     selecionarFiltro: vi.fn((filtro: PartidasFiltroUi) => filtroSelecionado.set(filtro)),
     tentarNovamente: vi.fn(),
     carregando,
@@ -267,7 +258,7 @@ function createListagemServiceMock() {
     partidasFiltradas: computed(() => partidas()),
   } satisfies Pick<
     PartidasListagemService,
-    | 'carregar'
+    | 'carregarDados'
     | 'selecionarFiltro'
     | 'tentarNovamente'
     | 'carregando'

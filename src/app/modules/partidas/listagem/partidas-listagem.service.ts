@@ -15,9 +15,9 @@ export class PartidasListagemService {
   readonly erro = signal<string | null>(null);
   readonly filtroSelecionado = signal<PartidasFiltroUi>('GERAL');
 
-  private readonly resposta = signal<GetPartidasDto[] | null>(null);
+  private readonly _partidas = signal<GetPartidasDto[] | null>(null);
 
-  readonly partidas = computed<GetPartidasDto[]>(() => this.resposta() ?? []);
+  readonly partidas = computed<GetPartidasDto[]>(() => this._partidas() ?? []);
 
   readonly partidasFiltradas = computed<GetPartidasDto[]>(() => {
     const filtroSelecionado = this.filtroSelecionado();
@@ -30,8 +30,8 @@ export class PartidasListagemService {
     return partidas.filter((partida) => this.extrairNumeroGrupo(partida.grupo) === filtroSelecionado);
   });
 
-  carregar(): void {
-    if (this.resposta() !== null || this.carregando()) {
+  carregarDados(): void {
+    if (this._partidas() !== null || this.carregando()) {
       return;
     }
 
@@ -42,9 +42,9 @@ export class PartidasListagemService {
       .getPartidas(undefined)
       .pipe(finalize(() => this.carregando.set(false)))
       .subscribe({
-        next: (resposta) => this.resposta.set(resposta),
+        next: (resposta) => this._partidas.set(resposta),
         error: () => {
-          this.resposta.set(null);
+          this._partidas.set(null);
           this.erro.set('Nao foi possivel carregar as partidas no momento.');
         },
       });
@@ -62,9 +62,9 @@ export class PartidasListagemService {
       .getPartidas(undefined)
       .pipe(finalize(() => this.carregando.set(false)))
       .subscribe({
-        next: (resposta) => this.resposta.set(resposta),
+        next: (resposta) => this._partidas.set(resposta),
         error: () => {
-          this.resposta.set(null);
+          this._partidas.set(null);
           this.erro.set('Nao foi possivel carregar as partidas no momento.');
         },
       });

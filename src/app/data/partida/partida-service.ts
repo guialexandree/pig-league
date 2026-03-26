@@ -1,8 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { GetPartidasFiltrosDto } from './dto/get-partidas-filtros.dto';
-import { GetPartidasDto } from './dto/get-partidas.dto';
+import {
+  GetPartidasDto,
+  GetPartidasFiltrosDto,
+  GetPartidasRealizadasDto,
+  GetPartidasRealizadasFiltrosDto,
+} from './dto';
 import { environment } from '@/environments/environment';
 
 @Injectable({
@@ -10,19 +14,36 @@ import { environment } from '@/environments/environment';
 })
 export class PartidaService {
   private readonly path = `${environment.apiUrl}/campeonato/partidas`;
+  private readonly pathPartidasRealizadas =
+    `${environment.apiUrl}/campeonato/partidas-realizadas`;
 
   private readonly http = inject(HttpClient);
 
   getPartidas(filters?: GetPartidasFiltrosDto): Observable<GetPartidasDto[]> {
-    const params =
-      filters?.grupoId === undefined
-        ? undefined
-        : new HttpParams({
-            fromObject: {
-              grupoId: String(filters.grupoId),
-            },
-          });
+    return this.http.get<GetPartidasDto[]>(this.path, {
+      params: this.mapFiltrosToParams(filters),
+    });
+  }
 
-    return this.http.get<GetPartidasDto[]>(this.path, { params });
+  getPartidasRealizadas(
+    filters?: GetPartidasRealizadasFiltrosDto,
+  ): Observable<GetPartidasRealizadasDto[]> {
+    return this.http.get<GetPartidasRealizadasDto[]>(this.pathPartidasRealizadas, {
+      params: this.mapFiltrosToParams(filters),
+    });
+  }
+
+  private mapFiltrosToParams(
+    filters?: GetPartidasFiltrosDto,
+  ): HttpParams | undefined {
+    if (filters?.grupoId === undefined) {
+      return undefined;
+    }
+
+    return new HttpParams({
+      fromObject: {
+        grupoId: String(filters.grupoId),
+      },
+    });
   }
 }

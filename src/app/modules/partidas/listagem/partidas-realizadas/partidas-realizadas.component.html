@@ -1,0 +1,79 @@
+<section class="done">
+  <header class="done__header">
+    <h3 class="done__title" data-testid="done-title">
+      <span class="done__title-icon" data-testid="done-trophy-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path
+            d="M7 3.25A1.25 1.25 0 0 1 8.25 2h7.5A1.25 1.25 0 0 1 17 3.25V5h2.25A1.75 1.75 0 0 1 21 6.75v1.5A4.75 4.75 0 0 1 17 12.94v.56A4.98 4.98 0 0 1 13 18.4v1.85h2.25a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5H11V18.4A4.98 4.98 0 0 1 7 13.5v-.56A4.75 4.75 0 0 1 3 8.25v-1.5A1.75 1.75 0 0 1 4.75 5H7V3.25Zm10 3.25v4.87A3.25 3.25 0 0 0 19.5 8.25v-1.5a.25.25 0 0 0-.25-.25H17Zm-10 0H4.75a.25.25 0 0 0-.25.25v1.5A3.25 3.25 0 0 0 7 11.37V6.5Z"
+          />
+        </svg>
+      </span>
+      <span>PARTIDAS REALIZADAS</span>
+    </h3>
+    <p class="done__subtitle">Partidas realizadas em ordem de data decrescente.</p>
+  </header>
+
+  @if (dataService.carregando()) {
+    <app-screen-loader
+      [visible]="true"
+      message="Carregando partidas realizadas..."
+      testIdPrefix="matches-realizadas"
+    />
+  } @else if (dataService.erro(); as mensagemErro) {
+    <div class="done__error" data-testid="done-error-state">
+      <p class="done__error-message">{{ mensagemErro }}</p>
+      <button
+        type="button"
+        class="btn done__retry"
+        (click)="tentarNovamente()"
+        data-testid="done-retry-button"
+      >
+        Tentar novamente
+      </button>
+    </div>
+  } @else if (dataService.partidasRealizadas().length === 0) {
+    <div class="done__empty" data-testid="done-empty-state">
+      Nenhuma partida realizada encontrada.
+    </div>
+  } @else {
+    <ngb-carousel
+      [interval]="0"
+      [keyboard]="true"
+      [pauseOnHover]="true"
+      [showNavigationArrows]="slides().length > 1"
+      [showNavigationIndicators]="slides().length > 1"
+      class="done__carousel"
+    >
+      @for (slide of slides(); track $index) {
+        <ng-template ngbSlide [id]="'done-slide-' + $index">
+          <div class="row g-3 done__slide">
+            @for (partida of slide; track partida.mandante + partida.visitante + $index) {
+              <div class="col-12 col-md-6 col-xl-4">
+                <article class="card done-card" data-testid="done-card">
+                  <div class="card-body">
+                    <div class="done-card__meta">
+                      <span>{{ formatarData(partida.dataHora) }}</span>
+                      <span>{{ formatarHorario(partida.dataHora) }}</span>
+                    </div>
+
+                    <p class="done-card__teams">
+                      <span>{{ partida.mandante }}</span>
+                      <span class="done-card__vs">vs</span>
+                      <span>{{ partida.visitante }}</span>
+                    </p>
+
+                    <div class="done-card__score">
+                      <span>{{ placarMandante(partida) }}</span>
+                      <span>:</span>
+                      <span>{{ placarVisitante(partida) }}</span>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            }
+          </div>
+        </ng-template>
+      }
+    </ngb-carousel>
+  }
+</section>

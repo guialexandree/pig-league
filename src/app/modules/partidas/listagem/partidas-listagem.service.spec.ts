@@ -27,7 +27,7 @@ describe(PartidasListagemService.name, () => {
 
     const service = TestBed.inject(PartidasListagemService);
 
-    service.carregar();
+    service.carregarDados();
     service.selecionarFiltro(PartidaGrupoEnum.GRUPO_1);
     service.selecionarFiltro(PartidaGrupoEnum.GRUPO_2);
     service.selecionarFiltro(PartidaGrupoEnum.GRUPO_1);
@@ -58,7 +58,7 @@ describe(PartidasListagemService.name, () => {
 
     const service = TestBed.inject(PartidasListagemService);
 
-    service.carregar();
+    service.carregarDados();
 
     expect(service.erro()).toBe('Nao foi possivel carregar as partidas no momento.');
     expect(service.partidas()).toEqual([]);

@@ -15,8 +15,20 @@
       />
     </div>
 
-    <div class="matches-toolbar">
+    <div class="matches-completed">
+      <app-partidas-realizadas  />
+    </div>
 
+    @if (service.partidasFiltradas().length <= 0) {
+      <div class="matches-upcoming">
+        <app-partidas-proximas
+          [titulo]="'PROXIMAS PARTIDAS'"
+          [partidas]="service.partidasFiltradas()"
+        />
+      </div>
+    }
+
+    <div class="matches-toolbar">
       <div class="matches-toolbar__filters" role="group" aria-label="Filtros de grupo">
         @for (filtro of filtros; track filtro.value) {
           <button
@@ -32,17 +44,9 @@
       </div>
     </div>
 
-    <div class="matches-upcoming">
-      <app-partidas-proximas
-        [titulo]="'PROXIMAS PARTIDAS'"
-        [partidas]="service.partidasFiltradas()"
-      />
-    </div>
-
     <article class="matches-card">
       <header class="matches-card__head">
-        <span>DATA</span>
-        <span>HORARIO</span>
+        <h3 class="matches-card__title">PARTIDAS PENDENTES</h3>
         <span>JOGO</span>
       </header>
 
@@ -77,23 +81,7 @@
         <div class="matches-list">
           @for (partida of service.partidasFiltradas(); track partida.mandante + partida.visitante + $index) {
             <article class="match-row" [class.match-row--canceled]="isCancelada(partida.status)">
-              <div class="match-row__date" data-testid="match-date">
-                {{ formatarData(partida.dataHora) }}
-              </div>
-
-              <div
-                class="match-row__time"
-                [class.match-row__time--status]="isNaoAgendada(partida.status)"
-                data-testid="match-time"
-              >
-                @if (isNaoAgendada(partida.status)) {
-                  Nao agendado
-                } @else {
-                  {{ formatarHorario(partida.dataHora) }}
-                }
-              </div>
-
-              <div class="match-row__game">
+              <div class="match-row__game" data-testid="match-game">
                 <div class="team">
                   <span class="team__name">{{ partida.mandante }}</span>
                   <span class="team__tag">

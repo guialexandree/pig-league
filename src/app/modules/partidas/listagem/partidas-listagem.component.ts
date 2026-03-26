@@ -1,11 +1,12 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
-import { format, isValid, parseISO } from 'date-fns';
 import { GetPartidasDto, PartidaGrupoEnum, PartidaStatusEnum } from '../../../data/partida/dto';
 import { ListagemHeaderComponent } from '../../shared/components/listagem-header/listagem-header.component';
 import { ScreenLoaderComponent } from '../../shared/components/screen-loader/screen-loader.component';
 import { PartidasProximasComponent } from './proximas-partidas/partidas-proximas.component';
+import { PartidasRealizadasComponent } from './partidas-realizadas/partidas-realizadas.component';
 import { PartidasFiltroUi, PartidasListagemService } from './partidas-listagem.service';
 import { PartidasTotaisComponent } from './totais/partidas-totais.component';
+import { AsyncPipe } from '@angular/common';
 
 interface FiltroPartidaItem {
   label: string;
@@ -19,8 +20,10 @@ interface FiltroPartidaItem {
   imports: [
     ListagemHeaderComponent,
     ScreenLoaderComponent,
+    PartidasRealizadasComponent,
     PartidasProximasComponent,
     PartidasTotaisComponent,
+    AsyncPipe,
   ],
   templateUrl: './partidas-listagem.component.html',
   styleUrl: './partidas-listagem.component.scss',
@@ -52,7 +55,7 @@ export class PartidasListagemComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.service.carregar();
+    this.service.carregarDados();
   }
 
   selecionarFiltro(filter: PartidasFiltroUi): void {
@@ -65,22 +68,6 @@ export class PartidasListagemComponent implements OnInit {
 
   tentarNovamente(): void {
     this.service.tentarNovamente();
-  }
-
-  formatarData(dataHora: string | null): string {
-    const date = this.parseData(dataHora);
-
-    return date ? format(date, 'dd/MM/yy') : '--';
-  }
-
-  formatarHorario(dataHora: string | null): string {
-    const date = this.parseData(dataHora);
-
-    return date ? format(date, 'HH:mm') : '--:--';
-  }
-
-  isNaoAgendada(status: PartidaStatusEnum): boolean {
-    return status === PartidaStatusEnum.NAO_AGENDADA;
   }
 
   isCancelada(status: PartidaStatusEnum): boolean {
@@ -104,14 +91,5 @@ export class PartidasListagemComponent implements OnInit {
       .join('');
 
     return letters || 'PL';
-  }
-
-  private parseData(value: string | null): Date | null {
-    if (!value) {
-      return null;
-    }
-
-    const parsed = parseISO(value);
-    return isValid(parsed) ? parsed : null;
   }
 }

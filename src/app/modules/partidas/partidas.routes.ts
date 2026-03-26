@@ -8,11 +8,7 @@ export const partidasRoutes: Routes = [
     children: [
       {
         path: '',
-        pathMatch: 'full',
-        redirectTo: 'partidas',
-      },
-      {
-        path: 'partidas',
+        title: 'Partidas Geral - Campeonato PigLeague',
         loadComponent: () =>
           import('./listagem/partidas-listagem.component').then((m) => m.PartidasListagemComponent),
       },

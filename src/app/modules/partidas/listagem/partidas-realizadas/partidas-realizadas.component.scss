@@ -1,0 +1,155 @@
+.done {
+  border-radius: 0.95rem;
+  border: 1px solid rgb(255 255 255 / 10%);
+  background: linear-gradient(
+    150deg,
+    rgb(24 26 30 / 88%),
+    rgb(15 17 20 / 88%) 58%,
+    rgb(12 13 16 / 88%)
+  );
+  box-shadow: 0 24px 48px rgb(0 0 0 / 35%);
+  padding: 1rem;
+}
+
+.done__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.85rem;
+}
+
+.done__title {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: rgb(239 242 249 / 94%);
+}
+
+.done__title-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  color: #f6bc57;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.done__title-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.done__subtitle {
+  margin: 0;
+  color: rgb(212 219 230 / 64%);
+  font-size: 0.78rem;
+}
+
+.done__empty {
+  border-radius: 0.72rem;
+  border: 1px dashed rgb(255 255 255 / 14%);
+  background: rgb(255 255 255 / 3%);
+  color: rgb(221 228 236 / 78%);
+  padding: 1rem;
+}
+
+.done__error {
+  border-radius: 0.72rem;
+  border: 1px solid rgb(255 129 129 / 24%);
+  background:
+    radial-gradient(circle at 12% 50%, rgb(255 116 116 / 15%), transparent 42%),
+    linear-gradient(100deg, rgb(67 22 24 / 42%), rgb(32 16 18 / 42%));
+  color: rgb(252 210 210 / 90%);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.done__error-message {
+  margin: 0;
+}
+
+.done__retry {
+  border: 1px solid rgb(255 158 158 / 62%);
+  border-radius: 999px;
+  color: #ffdede;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  padding: 0.4rem 0.92rem;
+  background: rgb(255 114 114 / 11%);
+}
+
+.done__retry:hover {
+  color: #351616;
+  background: rgb(255 163 163 / 76%);
+}
+
+.done__slide {
+  padding-inline: 0.12rem;
+}
+
+.done-card {
+  border: 1px solid rgb(246 188 87 / 32%);
+  background: linear-gradient(145deg, rgb(29 31 36 / 92%), rgb(19 21 24 / 92%));
+  color: rgb(228 232 239 / 95%);
+  min-height: 140px;
+}
+
+.done-card__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: rgb(202 209 220 / 72%);
+  margin-bottom: 0.6rem;
+}
+
+.done-card__teams {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.34rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-height: 44px;
+  text-align: center;
+}
+
+.done-card__vs {
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgb(176 183 196 / 75%);
+  font-size: 0.72rem;
+}
+
+.done-card__score {
+  margin-top: 0.62rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.46rem;
+  font-family: 'Oxanium', sans-serif;
+  font-weight: 700;
+  color: #f6bc57;
+}
+
+@media (max-width: 767.98px) {
+  .done {
+    padding: 0.9rem;
+  }
+
+  .done__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+}
