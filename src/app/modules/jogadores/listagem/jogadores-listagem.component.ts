@@ -10,11 +10,12 @@ import {
 import { JogadorService } from '../../../data/jogador/jogador-service';
 import { ListagemHeaderComponent } from '../../shared/components/listagem-header/listagem-header.component';
 import { ScreenLoaderComponent } from '../../shared/components/screen-loader/screen-loader.component';
+import { TierInfoComponent } from './tier-info/tier-info.component';
 
 @Component({
   selector: 'app-jogadores-listagem',
   standalone: true,
-  imports: [ListagemHeaderComponent, ScreenLoaderComponent],
+  imports: [ListagemHeaderComponent, ScreenLoaderComponent, TierInfoComponent],
   templateUrl: './jogadores-listagem.component.html',
   styleUrl: './jogadores-listagem.component.scss',
 })
@@ -91,6 +92,18 @@ export class JogadoresListagemComponent implements OnInit {
 
   getTierLabel(tier: JogadorTierEnum): string {
     return descricaoJogadorTier[tier] ?? 'Silver';
+  }
+
+  getTierMedal(tier: JogadorTierEnum): string {
+    if (tier === JogadorTierEnum.Silver) {
+      return '🥈';
+    }
+
+    if (tier === JogadorTierEnum.Gold) {
+      return '🥇';
+    }
+
+    return '🏅';
   }
 
   private carregarJogadores(): void {

@@ -1,0 +1,48 @@
+<section class="tier-info" data-testid="tier-info">
+  <div class="tier-info__layout">
+    <div class="tier-info__left">
+      <header class="tier-info__header">
+        <p class="tier-info__eyebrow">XP SYSTEM</p>
+        <h2 class="tier-info__title">Tiers e Regras de Pontuacao</h2>
+      </header>
+
+      <div class="tier-info__tiers">
+        @for (tier of tiers; track tier.nome) {
+          <article class="tier-card" [attr.data-tier]="tier.tier" [attr.data-testid]="'tier-card-' + tier.tier">
+            <div class="tier-card__img-shell">
+              <img [src]="tier.imagem" [alt]="'Card do tier ' + tier.nome" loading="lazy" decoding="async" />
+            </div>
+            <div class="tier-card__content">
+              <p class="tier-card__name">
+                <span class="tier-card__medal" [attr.data-tier]="tier.tier" aria-hidden="true">{{ tier.medalha }}</span>
+                {{ tier.nome }}
+              </p>
+              <p class="tier-card__xp">{{ tier.faixaXp }}</p>
+              <p class="tier-card__progress">{{ tier.progressoExemplo }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    </div>
+
+    <aside class="tier-info__rules-panel">
+      <h3 class="tier-info__rules-title">Regras de Pontuacao</h3>
+      <ul class="tier-info__rules" data-testid="tier-rules-list">
+        @for (regra of regrasPontuacao; track regra) {
+          <li [attr.data-tone]="regra.tom">
+            <span class="tier-info__rule-icon" [attr.data-tone]="regra.tom" aria-hidden="true">
+              {{ regra.icone }}
+            </span>
+            <div class="tier-info__rule-content">
+              <p class="tier-info__rule-title">
+                {{ regra.titulo }}
+                <span>{{ regra.destaque }}</span>
+              </p>
+              <p class="tier-info__rule-subtitle">{{ regra.subtitulo }}</p>
+            </div>
+          </li>
+        }
+      </ul>
+    </aside>
+  </div>
+</section>

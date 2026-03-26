@@ -63,6 +63,26 @@ describe(JogadoresListagemComponent.name, () => {
     expect(layoutContainer?.classList.contains('container-fluid')).toBe(true);
   });
 
+  it('deve renderizar o subcomponente de tiers e regras', () => {
+    const payload = createPayload();
+    const serviceMock = createServiceMock(payload);
+
+    TestBed.configureTestingModule({
+      imports: [JogadoresListagemComponent],
+      providers: [{ provide: JogadorService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(JogadoresListagemComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('[data-testid="tier-info"]')).not.toBeNull();
+    expect(root.querySelector('[data-testid="tier-card-silver"]')).not.toBeNull();
+    expect(root.querySelector('[data-testid="tier-card-gold"]')).not.toBeNull();
+    expect(root.querySelector('[data-testid="tier-card-hero"]')).not.toBeNull();
+  });
+
   it('deve aplicar as classes base do visual retrato gamer', () => {
     const payload = createPayload();
     const serviceMock = createServiceMock(payload);
@@ -147,7 +167,7 @@ describe(JogadoresListagemComponent.name, () => {
       '[data-testid="player-tier-progress-fill-3"]',
     ) as HTMLElement | null;
 
-    expect(fillGold?.style.width).toBe('35%');
+    expect(fillGold?.style.width).toBe('26.67%');
     expect(fillHero?.style.width).toBe('100%');
   });
 
@@ -173,7 +193,7 @@ describe(JogadoresListagemComponent.name, () => {
     expect(fallbackImage?.getAttribute('src')).toBe('/assets/img/player-empty.png');
   });
 
-  it('deve exibir os dados de gols, partidas e vitorias no card', () => {
+  it('deve exibir os dados de gols, vitorias e aprovacao no card', () => {
     const payload = createPayload();
     const serviceMock = createServiceMock(payload);
 
@@ -190,8 +210,9 @@ describe(JogadoresListagemComponent.name, () => {
 
     expect(card?.textContent).toContain('Gols');
     expect(card?.textContent).toContain(String(payload.jogadores[0].gols));
-    expect(card?.textContent).toContain(String(payload.jogadores[0].partidas));
     expect(card?.textContent).toContain(String(payload.jogadores[0].vitorias));
+    expect(card?.textContent).toContain('Aprov.');
+    expect(card?.textContent).not.toContain('Partidas');
   });
 
   it('deve ocultar o indicador OVR e manter os demais indicadores', () => {
@@ -212,7 +233,6 @@ describe(JogadoresListagemComponent.name, () => {
 
     expect(card?.textContent).not.toContain('OVR');
     expect(card?.textContent).toContain('Gols');
-    expect(card?.textContent).toContain('Partidas');
     expect(card?.textContent).toContain('Vitorias');
     expect(card?.textContent).toContain('Aprov.');
   });
@@ -315,11 +335,11 @@ function createPayload(): GetJogadoresDto {
         partidas: faker.number.int({ min: 1, max: 20 }),
         vitorias: faker.number.int({ min: 0, max: 20 }),
         percentualVitoria: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
-        xp: 350,
+        xp: 73,
         tier: JogadorTierEnum.Silver,
-        xpAtualNoTier: 350,
-        xpNecessarioProximoTier: 1000,
-        progressoProximoTierPercentual: 35,
+        xpAtualNoTier: 73,
+        xpNecessarioProximoTier: 110,
+        progressoProximoTierPercentual: 66.36,
       },
       {
         id: 2,
@@ -328,11 +348,11 @@ function createPayload(): GetJogadoresDto {
         partidas: faker.number.int({ min: 1, max: 20 }),
         vitorias: faker.number.int({ min: 0, max: 20 }),
         percentualVitoria: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
-        xp: 1350,
+        xp: 126,
         tier: JogadorTierEnum.Gold,
-        xpAtualNoTier: 350,
-        xpNecessarioProximoTier: 1000,
-        progressoProximoTierPercentual: 35,
+        xpAtualNoTier: 16,
+        xpNecessarioProximoTier: 60,
+        progressoProximoTierPercentual: 26.67,
       },
       {
         id: 3,
@@ -341,9 +361,9 @@ function createPayload(): GetJogadoresDto {
         partidas: faker.number.int({ min: 1, max: 20 }),
         vitorias: faker.number.int({ min: 0, max: 20 }),
         percentualVitoria: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
-        xp: 2350,
+        xp: 204,
         tier: JogadorTierEnum.Hero,
-        xpAtualNoTier: 350,
+        xpAtualNoTier: 34,
         xpNecessarioProximoTier: 0,
         progressoProximoTierPercentual: 100,
       },

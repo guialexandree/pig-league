@@ -5,12 +5,22 @@ import { JogadorTierEnum } from '../dto/jogador-tier.enum';
 export function generateGetJogadorDto(
   overrides: Partial<GetJogadorDto> = {},
 ): GetJogadorDto {
-  const xp = overrides.xp ?? faker.number.int({ min: 0, max: 3500 });
+  const xp = overrides.xp ?? faker.number.int({ min: 0, max: 260 });
   const tier = overrides.tier ?? resolveTier(xp);
-  const xpMinimoTier = tier === JogadorTierEnum.Silver ? 0 : tier === JogadorTierEnum.Gold ? 1000 : 2000;
+  const xpMinimoTier =
+    tier === JogadorTierEnum.Silver
+      ? 0
+      : tier === JogadorTierEnum.Gold
+        ? 110
+        : 170;
   const xpAtualNoTier = overrides.xpAtualNoTier ?? Math.max(0, xp - xpMinimoTier);
   const xpNecessarioProximoTier =
-    overrides.xpNecessarioProximoTier ?? (tier === JogadorTierEnum.Hero ? 0 : 1000);
+    overrides.xpNecessarioProximoTier ??
+    (tier === JogadorTierEnum.Hero
+      ? 0
+      : tier === JogadorTierEnum.Gold
+        ? 60
+        : 110);
   const progressoProximoTierPercentual =
     overrides.progressoProximoTierPercentual ??
     (tier === JogadorTierEnum.Hero
@@ -49,11 +59,11 @@ export function generateGetJogadoresDto(
 }
 
 function resolveTier(xp: number): JogadorTierEnum {
-  if (xp >= 2000) {
+  if (xp >= 170) {
     return JogadorTierEnum.Hero;
   }
 
-  if (xp >= 1000) {
+  if (xp >= 110) {
     return JogadorTierEnum.Gold;
   }
 

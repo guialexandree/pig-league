@@ -4,6 +4,8 @@
 
 .players-layout-shell {
   padding-inline: clamp(0.9rem, 2vw, 2rem);
+  display: grid;
+  gap: 1rem;
 }
 
 .players-feedback {
@@ -317,8 +319,31 @@
   color: rgb(232 217 255 / 88%);
 }
 
+.player-tier-progress__tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .player-tier-progress__tier {
   font-weight: 700;
+}
+
+.player-tier-progress__medal {
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgb(255 255 255 / 38%));
+}
+
+.player-tier-progress__medal[data-tier='1'] {
+  color: #d6deea;
+}
+
+.player-tier-progress__medal[data-tier='2'] {
+  color: #ffd76a;
+}
+
+.player-tier-progress__medal[data-tier='3'] {
+  color: #5cf0ff;
 }
 
 .player-tier-progress__xp {
@@ -346,7 +371,7 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: 0.44rem;
   row-gap: 0.38rem;
   align-content: center;
@@ -362,7 +387,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.08rem;
   min-height: 2.1rem;
   padding: 0.24rem 0.34rem 0.2rem;

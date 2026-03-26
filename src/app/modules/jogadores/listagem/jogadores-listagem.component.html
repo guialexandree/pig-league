@@ -8,6 +8,8 @@
   />
 
   <section class="container-fluid players-layout-shell py-4" data-testid="players-list-container">
+    <app-tier-info />
+
     @if (carregando()) {
       <app-screen-loader [visible]="true" message="Carregando jogadores..." testIdPrefix="players" />
     } @else if (erro(); as mensagemErro) {
@@ -31,7 +33,7 @@
         Nenhum jogador encontrado para montar os cards.
       </div>
     } @else {
-      <div class="players-grid">
+      <div class="players-grid mt-5">
         @for (jogador of jogadores(); track jogador.id; let index = $index) {
           <article
             class="player-card player-card--portrait"
@@ -69,7 +71,12 @@
                 [attr.data-testid]="'player-tier-progress-' + jogador.id"
               >
                 <div class="player-tier-progress__meta">
-                  <span class="player-tier-progress__tier">{{ getTierLabel(jogador.tier) }}</span>
+                  <span class="player-tier-progress__tier-badge" [attr.data-tier]="jogador.tier">
+                    <span class="player-tier-progress__medal" [attr.data-tier]="jogador.tier" aria-hidden="true">
+                      {{ getTierMedal(jogador.tier) }}
+                    </span>
+                    <span class="player-tier-progress__tier">{{ getTierLabel(jogador.tier) }}</span>
+                  </span>
                   <span class="player-tier-progress__xp">{{ jogador.xp }} XP</span>
                 </div>
                 <div class="player-tier-progress__track">
@@ -85,10 +92,6 @@
                 <li class="player-stats-item">
                   <strong>{{ jogador.gols }}</strong>
                   <span>Gols</span>
-                </li>
-                <li class="player-stats-item">
-                  <strong>{{ jogador.partidas }}</strong>
-                  <span>Partidas</span>
                 </li>
                 <li class="player-stats-item">
                   <strong>{{ jogador.vitorias }}</strong>
