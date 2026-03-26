@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-partidas-totais',
@@ -10,4 +10,6 @@ export class PartidasTotaisComponent {
   readonly totalPartidas = input<number>(0);
   readonly totalRealizadas = input<number>(0);
   readonly totalPendentes = input<number>(0);
+
+  pendente = computed(() => this.totalPartidas() - this.totalRealizadas());
 }
