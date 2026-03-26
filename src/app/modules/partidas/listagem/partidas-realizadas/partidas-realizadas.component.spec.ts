@@ -45,6 +45,48 @@ describe(PartidasRealizadasComponent.name, () => {
     expect(root.querySelectorAll('[data-testid="done-card"]').length).toBe(2);
   });
 
+  it('deve exibir data e horario da partida formatados no card', () => {
+    const serviceMock = createServiceMock([
+      generateGetPartidasRealizadasDto({
+        dataHora: '2026-03-26T00:00:00',
+      }),
+    ]);
+
+    TestBed.configureTestingModule({
+      imports: [PartidasRealizadasComponent],
+      providers: [{ provide: PartidasRealizadasService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(PartidasRealizadasComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const dateElement = root.querySelector('[data-testid="done-card-date"]');
+
+    expect(dateElement?.textContent?.trim()).toBe('26/03/2026 às 00:00');
+  });
+
+  it('nao deve exibir data quando partida nao tiver dataHora', () => {
+    const serviceMock = createServiceMock([
+      generateGetPartidasRealizadasDto({
+        dataHora: null,
+      }),
+    ]);
+
+    TestBed.configureTestingModule({
+      imports: [PartidasRealizadasComponent],
+      providers: [{ provide: PartidasRealizadasService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(PartidasRealizadasComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const dateElement = root.querySelector('[data-testid="done-card-date"]');
+
+    expect(dateElement).toBeNull();
+  });
+
   it('deve derivar titulo final a partir do input', () => {
     const serviceMock = createServiceMock();
 

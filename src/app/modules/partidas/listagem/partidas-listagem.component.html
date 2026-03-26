@@ -10,13 +10,13 @@
     <div class="matches-totals-wrap">
       <app-partidas-totais
         [totalPartidas]="totalizadores().totalPartidas"
-        [totalRealizadas]="totalizadores().totalRealizadas"
+        [totalRealizadas]="partidasRealizadasComponent.totalPartidas"
         [totalPendentes]="totalizadores().totalPendentes"
       />
     </div>
 
-    <div class="matches-completed mt-5">
-      <app-partidas-realizadas  />
+    <div class="matches-completed mt-4">
+      <app-partidas-realizadas #partidasRealizadasComponent />
     </div>
 
     @if (service.partidas().length <= 0) {

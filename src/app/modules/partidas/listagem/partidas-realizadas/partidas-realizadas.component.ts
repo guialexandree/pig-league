@@ -1,9 +1,11 @@
-import { Component, OnInit, computed, inject, input } from '@angular/core';
-import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { NgbCarousel, NgbCarouselModule, NgbSlideEvent } from '@ng-bootstrap/ng-bootstrap';
 import { format, isValid, parseISO } from 'date-fns';
 import { GetPartidasRealizadasDto } from '../../../../data/partida/dto';
 import { ScreenLoaderComponent } from '../../../shared/components/screen-loader/screen-loader.component';
 import { PartidasRealizadasService } from './partidas-realizadas.service';
+
+type TeamSide = 'mandante' | 'visitante';
 
 @Component({
   selector: 'app-partidas-realizadas',
@@ -14,10 +16,20 @@ import { PartidasRealizadasService } from './partidas-realizadas.service';
 })
 export class PartidasRealizadasComponent implements OnInit {
   readonly dataService = inject(PartidasRealizadasService);
+  readonly currentSlideIndex = signal(0);
 
   readonly slides = computed<GetPartidasRealizadasDto[][]>(() =>
     this.chunk(this.dataService.partidasRealizadas(), 3),
   );
+  readonly canGoPrev = computed(() => this.normalizedSlideIndex() > 0);
+  readonly canGoNext = computed(() => this.normalizedSlideIndex() < this.slides().length - 1);
+
+  private readonly normalizedSlideIndex = computed(() => {
+    const maxIndex = Math.max(this.slides().length - 1, 0);
+    return Math.min(Math.max(this.currentSlideIndex(), 0), maxIndex);
+  });
+
+  totalPartidas = this.dataService.partidasRealizadas().length;
 
   ngOnInit(): void {
     this.dataService.carregar();
@@ -27,9 +39,29 @@ export class PartidasRealizadasComponent implements OnInit {
     this.dataService.tentarNovamente();
   }
 
-  formatarData(dataHora: string | null): string {
+  onSlide(event: NgbSlideEvent): void {
+    this.currentSlideIndex.set(this.slideIndexFromId(event.current));
+  }
+
+  goToPrevious(carousel: NgbCarousel): void {
+    if (!this.canGoPrev()) {
+      return;
+    }
+
+    carousel.prev();
+  }
+
+  goToNext(carousel: NgbCarousel): void {
+    if (!this.canGoNext()) {
+      return;
+    }
+
+    carousel.next();
+  }
+
+  formatarData(dataHora: string | null): string | null {
     const date = this.parseData(dataHora);
-    return date ? format(date, 'dd/MM/yy') : '--';
+    return date ? format(date, "dd/MM/yyyy 'às' HH:mm") : null;
   }
 
   formatarHorario(dataHora: string | null): string {
@@ -43,6 +75,21 @@ export class PartidasRealizadasComponent implements OnInit {
 
   placarVisitante(partida: GetPartidasRealizadasDto): string {
     return partida.golsVisitante === null ? '--' : String(partida.golsVisitante);
+  }
+
+  isWinner(partida: GetPartidasRealizadasDto, side: TeamSide): boolean {
+    const scoreDiff = this.scoreDiff(partida, side);
+    return scoreDiff !== null && scoreDiff > 0;
+  }
+
+  isLoser(partida: GetPartidasRealizadasDto, side: TeamSide): boolean {
+    const scoreDiff = this.scoreDiff(partida, side);
+    return scoreDiff !== null && scoreDiff < 0;
+  }
+
+  isDraw(partida: GetPartidasRealizadasDto): boolean {
+    const scoreDiff = this.scoreDiff(partida, 'mandante');
+    return scoreDiff !== null && scoreDiff === 0;
   }
 
   teamTag(nomeTime: string): string {
@@ -76,5 +123,28 @@ export class PartidasRealizadasComponent implements OnInit {
 
     const parsed = parseISO(value);
     return isValid(parsed) ? parsed : null;
+  }
+
+  private scoreDiff(partida: GetPartidasRealizadasDto, side: TeamSide): number | null {
+    if (partida.golsMandante === null || partida.golsVisitante === null) {
+      return null;
+    }
+
+    if (side === 'mandante') {
+      return partida.golsMandante - partida.golsVisitante;
+    }
+
+    return partida.golsVisitante - partida.golsMandante;
+  }
+
+  private slideIndexFromId(slideId: string): number {
+    const slidePrefix = 'done-slide-';
+
+    if (!slideId.startsWith(slidePrefix)) {
+      return 0;
+    }
+
+    const slideIndex = Number.parseInt(slideId.slice(slidePrefix.length), 10);
+    return Number.isNaN(slideIndex) || slideIndex < 0 ? 0 : slideIndex;
   }
 }

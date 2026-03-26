@@ -16,12 +16,7 @@ export class PartidasRealizadasService {
   private readonly resposta = signal<GetPartidasRealizadasDto[] | null>(null);
 
   readonly partidasRealizadas = computed<GetPartidasRealizadasDto[]>(() =>
-    (this.resposta() ?? [])
-      .filter((partida) => partida.status === PartidaStatusEnum.REALIZADA)
-      .sort((partidaAtual, proximaPartida) =>
-        this.getTimestamp(proximaPartida.dataHora) -
-        this.getTimestamp(partidaAtual.dataHora)),
-  );
+    (this.resposta() ?? []));
 
   carregar(): void {
     if (this.resposta() !== null || this.carregando()) {
@@ -49,14 +44,5 @@ export class PartidasRealizadasService {
           this.erro.set('Nao foi possivel carregar as partidas realizadas no momento.');
         },
       });
-  }
-
-  private getTimestamp(dataHora: string | null): number {
-    if (!dataHora) {
-      return Number.NEGATIVE_INFINITY;
-    }
-
-    const parsedDate = parseISO(dataHora);
-    return isValid(parsedDate) ? getTime(parsedDate) : Number.NEGATIVE_INFINITY;
   }
 }

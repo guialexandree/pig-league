@@ -9,7 +9,7 @@
             />
           </svg>
         </span>
-        <h5 class="fw-bold">PARTIDAS REALIZADAS</h5>
+        <h5 class="fw-bold mb-0">PARTIDAS REALIZADAS</h5>
       </h3>
     </div>
   </header>
@@ -37,48 +37,105 @@
       Nenhuma partida realizada encontrada.
     </div>
   } @else {
-    <ngb-carousel
-      [interval]="0"
-      [keyboard]="true"
-      [pauseOnHover]="true"
-      [showNavigationArrows]="slides().length > 1"
-      [showNavigationIndicators]="slides().length > 1"
-      class="done__carousel"
-    >
-      @for (slide of slides(); track $index) {
-        <ng-template ngbSlide [id]="'done-slide-' + $index">
-          <div class="row g-3 done__slide">
-            @for (partida of slide; track partida.mandante + partida.visitante + $index) {
-              <div class="col-12 col-md-6 col-xl-4">
-                <article class="card done-card" data-testid="done-card">
-                  <div class="card-body done-card__body">
+    <div class="done__carousel-shell">
+      <button
+        type="button"
+        class="done__carousel-arrow done__carousel-arrow--prev"
+        (click)="goToPrevious(doneCarousel)"
+        [disabled]="!canGoPrev()"
+        aria-label="Slide anterior"
+      >
+        <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+          <path d="M10.5 3L5.5 8L10.5 13" />
+        </svg>
+      </button>
 
-                    <div class="done-card__versus">
-                      <div class="done-card__team">
-                        <span class="done-card__tag">{{ teamTag(partida.mandante) }}</span>
-                        <span class="done-card__name">{{ partida.mandante }}</span>
-                      </div>
+      <ngb-carousel
+        #doneCarousel="ngbCarousel"
+        [interval]="0"
+        [keyboard]="true"
+        [pauseOnHover]="true"
+        [wrap]="false"
+        [showNavigationArrows]="false"
+        [showNavigationIndicators]="false"
+        (slid)="onSlide($event)"
+        class="done__carousel"
+      >
+        @for (slide of slides(); track $index) {
+          <ng-template ngbSlide [id]="'done-slide-' + $index">
+            <div class="row g-3 done__slide">
+              @for (partida of slide; track partida.mandante + partida.visitante + $index) {
+                <div class="col-12 col-md-6 col-xl-4">
+                  <article class="card done-card" data-testid="done-card">
+                    <div class="card-body done-card__body">
+                      <div class="done-card__matchup">
+                        <div class="d-flex align-items-center justify-content-between">
+                          <img src="/assets/img/controle.png" height="32" alt="controle xbox" />
+                          @if (formatarData(partida.dataHora); as dataFormatada) {
+                            <span data-testid="done-card-date">{{ dataFormatada }}</span>
+                          }
+                        </div>
 
-                      <span class="done-card__vs">vs</span>
+                        <div
+                          class="done-card__line"
+                          [class.done-card__line--winner]="isWinner(partida, 'mandante')"
+                          [class.done-card__line--loser]="isLoser(partida, 'mandante')"
+                          [class.done-card__line--draw]="isDraw(partida)"
+                        >
+                          <div class="done-card__player">
+                            <span class="done-card__tag">{{ teamTag(partida.mandante) }}</span>
+                            <span class="done-card__name">{{ partida.mandante }}</span>
+                          </div>
+                          <span
+                            class="done-card__line-score"
+                            [class.done-card__line-score--winner]="isWinner(partida, 'mandante')"
+                            [class.done-card__line-score--loser]="isLoser(partida, 'mandante')"
+                            [class.done-card__line-score--draw]="isDraw(partida)"
+                          >
+                            {{ placarMandante(partida) }}
+                          </span>
+                        </div>
 
-                      <div class="done-card__team done-card__team--away">
-                        <span class="done-card__tag">{{ teamTag(partida.visitante) }}</span>
-                        <span class="done-card__name">{{ partida.visitante }}</span>
+                        <div
+                          class="done-card__line"
+                          [class.done-card__line--winner]="isWinner(partida, 'visitante')"
+                          [class.done-card__line--loser]="isLoser(partida, 'visitante')"
+                          [class.done-card__line--draw]="isDraw(partida)"
+                        >
+                          <div class="done-card__player">
+                            <span class="done-card__tag">{{ teamTag(partida.visitante) }}</span>
+                            <span class="done-card__name">{{ partida.visitante }}</span>
+                          </div>
+                          <span
+                            class="done-card__line-score"
+                            [class.done-card__line-score--winner]="isWinner(partida, 'visitante')"
+                            [class.done-card__line-score--loser]="isLoser(partida, 'visitante')"
+                            [class.done-card__line-score--draw]="isDraw(partida)"
+                          >
+                            {{ placarVisitante(partida) }}
+                          </span>
+                        </div>
                       </div>
                     </div>
+                  </article>
+                </div>
+              }
+            </div>
+          </ng-template>
+        }
+      </ngb-carousel>
 
-                    <div class="done-card__score">
-                      <span>{{ placarMandante(partida) }}</span>
-                      <span class="done-card__score-separator">:</span>
-                      <span>{{ placarVisitante(partida) }}</span>
-                    </div>
-                  </div>
-                </article>
-              </div>
-            }
-          </div>
-        </ng-template>
-      }
-    </ngb-carousel>
+      <button
+        type="button"
+        class="done__carousel-arrow done__carousel-arrow--next"
+        (click)="goToNext(doneCarousel)"
+        [disabled]="!canGoNext()"
+        aria-label="Próximo slide"
+      >
+        <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+          <path d="M5.5 3L10.5 8L5.5 13" />
+        </svg>
+      </button>
+    </div>
   }
 </section>
