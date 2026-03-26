@@ -35,6 +35,7 @@
         @for (jogador of jogadores(); track jogador.id; let index = $index) {
           <article
             class="player-card player-card--portrait"
+            [attr.data-tier]="jogador.tier"
             [attr.data-testid]="'player-card-' + jogador.id"
           >
             <figure class="player-portrait-shell" [attr.data-testid]="'player-portrait-shell-' + jogador.id">
@@ -63,10 +64,21 @@
             </figure>
 
             <footer class="player-stats-band" [attr.data-testid]="'player-stats-band-' + jogador.id">
-              <div class="player-stats-band__rating">
-                <span class="player-stats-band__rating-value">{{ jogador.percentualVitoria.toFixed(0) }}</span>
-                <span class="player-stats-band__rating-label">OVR</span>
-                <span class="player-stats-band__rating-subtitle">Vitoria</span>
+              <div
+                class="player-tier-progress"
+                [attr.data-testid]="'player-tier-progress-' + jogador.id"
+              >
+                <div class="player-tier-progress__meta">
+                  <span class="player-tier-progress__tier">{{ getTierLabel(jogador.tier) }}</span>
+                  <span class="player-tier-progress__xp">{{ jogador.xp }} XP</span>
+                </div>
+                <div class="player-tier-progress__track">
+                  <div
+                    class="player-tier-progress__fill"
+                    [attr.data-testid]="'player-tier-progress-fill-' + jogador.id"
+                    [style.width]="getTierProgressWidth(jogador.progressoProximoTierPercentual)"
+                  ></div>
+                </div>
               </div>
 
               <ul class="player-stats-grid">
@@ -83,7 +95,7 @@
                   <span>Vitorias</span>
                 </li>
                 <li class="player-stats-item">
-                  <strong>{{ formatPercentual(jogador.percentualVitoria) }}</strong>
+                  <strong>{{ jogador.percentualVitoria }}%</strong>
                   <span>Aprov.</span>
                 </li>
               </ul>

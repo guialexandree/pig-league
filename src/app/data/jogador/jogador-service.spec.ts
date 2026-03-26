@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { faker } from '@faker-js/faker';
-import { GetJogadoresDto } from './dto/get-jogadores.dto';
+import { GetJogadoresDto, JogadorTierEnum } from './dto';
 import { JogadorService } from './jogador-service';
 
 describe(JogadorService.name, () => {
@@ -42,6 +42,11 @@ describe(JogadorService.name, () => {
             max: 100,
             fractionDigits: 2,
           }),
+          xp: 350,
+          tier: JogadorTierEnum.Silver,
+          xpAtualNoTier: 350,
+          xpNecessarioProximoTier: 1000,
+          progressoProximoTierPercentual: 35,
         },
         {
           id: 2,
@@ -54,6 +59,11 @@ describe(JogadorService.name, () => {
             max: 100,
             fractionDigits: 2,
           }),
+          xp: 1350,
+          tier: JogadorTierEnum.Gold,
+          xpAtualNoTier: 350,
+          xpNecessarioProximoTier: 1000,
+          progressoProximoTierPercentual: 35,
         },
       ],
     };

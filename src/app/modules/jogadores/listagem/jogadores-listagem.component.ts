@@ -1,7 +1,12 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { format, isValid, parseISO } from 'date-fns';
 import { finalize } from 'rxjs';
-import { GetJogadorDto, GetJogadoresDto } from '../../../data/jogador/dto';
+import {
+  GetJogadorDto,
+  GetJogadoresDto,
+  JogadorTierEnum,
+  descricaoJogadorTier,
+} from '../../../data/jogador/dto';
 import { JogadorService } from '../../../data/jogador/jogador-service';
 import { ListagemHeaderComponent } from '../../shared/components/listagem-header/listagem-header.component';
 import { ScreenLoaderComponent } from '../../shared/components/screen-loader/screen-loader.component';
@@ -15,6 +20,7 @@ import { ScreenLoaderComponent } from '../../shared/components/screen-loader/scr
 })
 export class JogadoresListagemComponent implements OnInit {
   private readonly jogadorService = inject(JogadorService);
+  readonly jogadorTierEnum = JogadorTierEnum;
 
   readonly carregando = signal<boolean>(false);
   readonly erro = signal<string | null>(null);
@@ -77,6 +83,14 @@ export class JogadoresListagemComponent implements OnInit {
     }
 
     return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  }
+
+  getTierProgressWidth(percentual: number): string {
+    return `${this.sanitizePercentual(percentual)}%`;
+  }
+
+  getTierLabel(tier: JogadorTierEnum): string {
+    return descricaoJogadorTier[tier] ?? 'Silver';
   }
 
   private carregarJogadores(): void {

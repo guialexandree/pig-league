@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { faker } from '@faker-js/faker';
 import { of, throwError } from 'rxjs';
-import { GetJogadoresDto } from '../../../data/jogador/dto';
+import { GetJogadoresDto, JogadorTierEnum } from '../../../data/jogador/dto';
 import { JogadorService } from '../../../data/jogador/jogador-service';
 import { JogadoresListagemComponent } from './jogadores-listagem.component';
 
@@ -86,7 +86,7 @@ describe(JogadoresListagemComponent.name, () => {
     expect(statsBand?.classList.contains('player-stats-band')).toBe(true);
   });
 
-  it('deve exibir placeholder com iniciais e descricao acessivel quando nao ha foto', () => {
+  it('deve exibir descricao acessivel da area de media quando nao ha foto', () => {
     const payload = createPayload();
     const serviceMock = createServiceMock(payload);
 
@@ -101,12 +101,54 @@ describe(JogadoresListagemComponent.name, () => {
     const root = fixture.nativeElement as HTMLElement;
     const jogador = payload.jogadores[0];
     const media = root.querySelector(`[data-testid="player-media-${jogador.id}"]`);
-    const initialsNode = root.querySelector(
-      `[data-testid="player-placeholder-initials-${jogador.id}"]`,
-    );
 
     expect(media?.getAttribute('aria-label')).toBe(`Retrato de ${jogador.nome}`);
-    expect(initialsNode?.textContent?.trim()).toBe(getExpectedInitials(jogador.nome));
+  });
+
+  it('deve aplicar atributo data-tier no card conforme tier do jogador', () => {
+    const payload = createPayload();
+    const serviceMock = createServiceMock(payload);
+
+    TestBed.configureTestingModule({
+      imports: [JogadoresListagemComponent],
+      providers: [{ provide: JogadorService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(JogadoresListagemComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const cardSilver = root.querySelector('[data-testid="player-card-1"]');
+    const cardGold = root.querySelector('[data-testid="player-card-2"]');
+    const cardHero = root.querySelector('[data-testid="player-card-3"]');
+
+    expect(cardSilver?.getAttribute('data-tier')).toBe(String(JogadorTierEnum.Silver));
+    expect(cardGold?.getAttribute('data-tier')).toBe(String(JogadorTierEnum.Gold));
+    expect(cardHero?.getAttribute('data-tier')).toBe(String(JogadorTierEnum.Hero));
+  });
+
+  it('deve exibir barra de progresso com percentual retornado pelo backend', () => {
+    const payload = createPayload();
+    const serviceMock = createServiceMock(payload);
+
+    TestBed.configureTestingModule({
+      imports: [JogadoresListagemComponent],
+      providers: [{ provide: JogadorService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(JogadoresListagemComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const fillGold = root.querySelector(
+      '[data-testid="player-tier-progress-fill-2"]',
+    ) as HTMLElement | null;
+    const fillHero = root.querySelector(
+      '[data-testid="player-tier-progress-fill-3"]',
+    ) as HTMLElement | null;
+
+    expect(fillGold?.style.width).toBe('35%');
+    expect(fillHero?.style.width).toBe('100%');
   });
 
   it('deve exibir imagem padrao de jogador quando nao houver foto', () => {
@@ -150,6 +192,29 @@ describe(JogadoresListagemComponent.name, () => {
     expect(card?.textContent).toContain(String(payload.jogadores[0].gols));
     expect(card?.textContent).toContain(String(payload.jogadores[0].partidas));
     expect(card?.textContent).toContain(String(payload.jogadores[0].vitorias));
+  });
+
+  it('deve ocultar o indicador OVR e manter os demais indicadores', () => {
+    const payload = createPayload();
+    const serviceMock = createServiceMock(payload);
+
+    TestBed.configureTestingModule({
+      imports: [JogadoresListagemComponent],
+      providers: [{ provide: JogadorService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(JogadoresListagemComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const jogador = payload.jogadores[0];
+    const card = root.querySelector(`[data-testid="player-card-${jogador.id}"]`);
+
+    expect(card?.textContent).not.toContain('OVR');
+    expect(card?.textContent).toContain('Gols');
+    expect(card?.textContent).toContain('Partidas');
+    expect(card?.textContent).toContain('Vitorias');
+    expect(card?.textContent).toContain('Aprov.');
   });
 
   it('deve renderizar header dedicado com logo em destaque', () => {
@@ -250,6 +315,11 @@ function createPayload(): GetJogadoresDto {
         partidas: faker.number.int({ min: 1, max: 20 }),
         vitorias: faker.number.int({ min: 0, max: 20 }),
         percentualVitoria: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
+        xp: 350,
+        tier: JogadorTierEnum.Silver,
+        xpAtualNoTier: 350,
+        xpNecessarioProximoTier: 1000,
+        progressoProximoTierPercentual: 35,
       },
       {
         id: 2,
@@ -258,24 +328,25 @@ function createPayload(): GetJogadoresDto {
         partidas: faker.number.int({ min: 1, max: 20 }),
         vitorias: faker.number.int({ min: 0, max: 20 }),
         percentualVitoria: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
+        xp: 1350,
+        tier: JogadorTierEnum.Gold,
+        xpAtualNoTier: 350,
+        xpNecessarioProximoTier: 1000,
+        progressoProximoTierPercentual: 35,
+      },
+      {
+        id: 3,
+        nome: faker.person.fullName(),
+        gols: faker.number.int({ min: 0, max: 30 }),
+        partidas: faker.number.int({ min: 1, max: 20 }),
+        vitorias: faker.number.int({ min: 0, max: 20 }),
+        percentualVitoria: faker.number.float({ min: 0, max: 100, fractionDigits: 2 }),
+        xp: 2350,
+        tier: JogadorTierEnum.Hero,
+        xpAtualNoTier: 350,
+        xpNecessarioProximoTier: 0,
+        progressoProximoTierPercentual: 100,
       },
     ],
   };
-}
-
-function getExpectedInitials(nome: string): string {
-  const parts = nome
-    .trim()
-    .split(/\s+/)
-    .filter((part) => part.length > 0);
-
-  if (parts.length === 0) {
-    return 'PL';
-  }
-
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
 }
