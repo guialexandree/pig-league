@@ -7,7 +7,7 @@ export enum JogadorTierEnum {
 export const descricaoJogadorTier: Record<JogadorTierEnum, string> = {
   [JogadorTierEnum.Silver]: 'Silver',
   [JogadorTierEnum.Gold]: 'Gold',
-  [JogadorTierEnum.Hero]: 'Hero',
+  [JogadorTierEnum.Hero]: 'Icon',
 };
 
 export const jogadorTierFaixaXp: Record<JogadorTierEnum, string> = {
