@@ -4,7 +4,7 @@ export const jogadoresRoutes: Routes = [
   {
     path: '',
     loadComponent: () => import('./jogadores.component').then((m) => m.JogadoresComponent),
-    title: 'Jogadores - Campeonato PigLeague',
+    title: 'Jogadores - INSIDE CUP FC25',
     children: [
       {
         path: '',

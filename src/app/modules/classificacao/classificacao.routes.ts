@@ -5,7 +5,7 @@ export const classificacaoRoutes: Routes = [
     path: '',
     loadComponent: () =>
       import('./classificacao.component').then((m) => m.ClassificacaoComponent),
-    title: 'Classificacao - Campeonato PigLeague',
+    title: 'Classificacao - INSIDE CUP FC25',
     children: [
       {
         path: '',

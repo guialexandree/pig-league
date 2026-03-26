@@ -7,9 +7,8 @@ export const routes: Routes = [
     path: '',
     component: MainTemplateComponent,
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'partidas' },
       {
-        path: 'partidas',
+        path: '',
         loadChildren: () =>
           import('./modules/partidas/partidas.routes').then((m) => m.partidasRoutes),
       },
@@ -31,5 +30,9 @@ export const routes: Routes = [
       },
       { path: 'estatisticas', component: SectionTemplateComponent },
     ],
+  },
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];

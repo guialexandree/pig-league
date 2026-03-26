@@ -4,7 +4,7 @@ export const regrasRoutes: Routes = [
   {
     path: '',
     loadComponent: () => import('./regras.component').then((m) => m.RegrasComponent),
-    title: 'Regras - Campeonato PigLeague',
+    title: 'Regras - INSIDE CUP FC25',
     children: [
       {
         path: '',

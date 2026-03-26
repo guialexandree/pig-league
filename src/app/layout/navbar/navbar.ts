@@ -10,7 +10,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class NavbarComponent {
   readonly menu = [
-    { label: 'Jogos', route: '/partidas' },
+    { label: 'Jogos', route: '/' },
     { label: 'Classificação', route: '/classificacao' },
     { label: 'Players', route: '/jogadores' },
     { label: 'Regras', route: '/regras' },

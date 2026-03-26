@@ -4,11 +4,11 @@ export const partidasRoutes: Routes = [
   {
     path: '',
     loadComponent: () => import('./partidas.component').then((m) => m.PartidasComponent),
-    title: 'Partidas - Campeonato PigLeague',
+    title: 'Partidas - INSIDE CUP FC25',
     children: [
       {
         path: '',
-        title: 'Partidas Geral - Campeonato PigLeague',
+        title: 'Partidas Geral - INSIDE CUP FC25',
         loadComponent: () =>
           import('./listagem/partidas-listagem.component').then((m) => m.PartidasListagemComponent),
       },
