@@ -5,10 +5,11 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { faker } from '@faker-js/faker';
-import { GetPartidasDto, GetPartidasRealizadasDto } from './dto';
+import { GetPartidasDto, GetPartidasRealizadasDto, GetPartidasTotaisDto } from './dto';
 import {
   generateGetPartidasDto,
   generateGetPartidasRealizadasDto,
+  generateGetPartidasTotaisDto,
 } from './mocks';
 import { PartidaService } from './partida-service';
 
@@ -129,5 +130,24 @@ describe(PartidaService.name, () => {
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('grupoId')).toBe(String(grupoId));
     req.flush([]);
+  });
+
+  it('deve buscar totais em /campeonato/totais sem query params', () => {
+    const response: GetPartidasTotaisDto = generateGetPartidasTotaisDto();
+
+    let actual: GetPartidasTotaisDto | undefined;
+
+    service.getPartidasTotais().subscribe((payload) => {
+      actual = payload;
+    });
+
+    const req = httpMock.expectOne(
+      (request) => request.url.endsWith('/campeonato/totais'),
+    );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.keys().length).toBe(0);
+    req.flush(response);
+
+    expect(actual).toEqual(response);
   });
 });

@@ -6,6 +6,7 @@ import {
   GetPartidasFiltrosDto,
   GetPartidasRealizadasDto,
   GetPartidasRealizadasFiltrosDto,
+  GetPartidasTotaisDto,
 } from './dto';
 import { environment } from '@/environments/environment';
 
@@ -13,47 +14,71 @@ import { environment } from '@/environments/environment';
   providedIn: 'root',
 })
 export class PartidaService {
-  private readonly path = `${environment.apiUrl}/campeonato/partidas`;
-  private readonly pathPartidasPendentes =
-    `${environment.apiUrl}/campeonato/partidas-pendentes`;
-  private readonly pathPartidasRealizadas =
-    `${environment.apiUrl}/campeonato/partidas-realizadas`;
+  private readonly path = '/campeonato';
 
   private readonly http = inject(HttpClient);
 
   getPartidas(filters?: GetPartidasFiltrosDto): Observable<GetPartidasDto[]> {
-    return this.http.get<GetPartidasDto[]>(this.path, {
-      params: this.mapFiltrosToParams(filters),
-    });
+    const params =
+      filters?.grupoId === undefined
+        ? undefined
+        : new HttpParams({
+            fromObject: {
+              grupoId: String(filters.grupoId),
+            },
+          });
+
+    return this.http.get<GetPartidasDto[]>(
+      `${environment.apiUrl}${this.path}/partidas`,
+      {
+        params,
+      },
+    );
   }
 
   getPartidasPendentes(
     filters?: GetPartidasFiltrosDto,
   ): Observable<GetPartidasDto[]> {
-    return this.http.get<GetPartidasDto[]>(this.pathPartidasPendentes, {
-      params: this.mapFiltrosToParams(filters),
-    });
+    const params =
+      filters?.grupoId === undefined
+        ? undefined
+        : new HttpParams({
+            fromObject: {
+              grupoId: String(filters.grupoId),
+            },
+          });
+
+    return this.http.get<GetPartidasDto[]>(
+      `${environment.apiUrl}${this.path}/partidas-pendentes`,
+      {
+        params,
+      },
+    );
   }
 
   getPartidasRealizadas(
     filters?: GetPartidasRealizadasFiltrosDto,
   ): Observable<GetPartidasRealizadasDto[]> {
-    return this.http.get<GetPartidasRealizadasDto[]>(this.pathPartidasRealizadas, {
-      params: this.mapFiltrosToParams(filters),
-    });
+    const params =
+      filters?.grupoId === undefined
+        ? undefined
+        : new HttpParams({
+            fromObject: {
+              grupoId: String(filters.grupoId),
+            },
+          });
+
+    return this.http.get<GetPartidasRealizadasDto[]>(
+      `${environment.apiUrl}${this.path}/partidas-realizadas`,
+      {
+        params,
+      },
+    );
   }
 
-  private mapFiltrosToParams(
-    filters?: GetPartidasFiltrosDto,
-  ): HttpParams | undefined {
-    if (filters?.grupoId === undefined) {
-      return undefined;
-    }
-
-    return new HttpParams({
-      fromObject: {
-        grupoId: String(filters.grupoId),
-      },
-    });
+  getPartidasTotais(): Observable<GetPartidasTotaisDto> {
+    return this.http.get<GetPartidasTotaisDto>(
+      `${environment.apiUrl}${this.path}/totais`,
+    );
   }
 }

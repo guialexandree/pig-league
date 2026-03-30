@@ -8,15 +8,11 @@
 
   <section class="container matches-content py-4">
     <div class="matches-totals-wrap">
-      <app-partidas-totais
-        [totalPartidas]="totalizadores().totalPartidas"
-        [totalRealizadas]="partidasRealizadasComponent.totalPartidas"
-        [totalPendentes]="totalizadores().totalPendentes"
-      />
+      <app-partidas-totais />
     </div>
 
     <div class="matches-completed mt-4">
-      <app-partidas-realizadas #partidasRealizadasComponent />
+      <app-partidas-realizadas />
     </div>
 
     @if (service.partidas().length <= 0) {

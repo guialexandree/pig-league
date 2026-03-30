@@ -3,7 +3,7 @@ import { signal } from '@angular/core';
 import { faker } from '@faker-js/faker';
 import { of, throwError } from 'rxjs';
 import { GetPartidasDto } from '../../../data/partida/dto/get-partidas.dto';
-import { PartidaGrupoEnum } from '../../../data/partida/dto/partida-grupo.enum';
+import { GetPartidasTotaisDto } from '../../../data/partida/dto/get-partidas-totais.dto';
 import { PartidaStatusEnum } from '../../../data/partida/dto/partida-status.enum';
 import { PartidaService } from '../../../data/partida/partida-service';
 import { PartidasListagemComponent } from './partidas-listagem.component';
@@ -50,35 +50,14 @@ describe(PartidasListagemComponent.name, () => {
   });
 
   it('deve exibir totalizadores acima dos filtros', () => {
-    const serviceMock = createServiceMock([
+    const serviceMock = createServiceMock(
+      createResponsePayload(),
       {
-        grupo: 'GRUPO 1',
-        dataHora: '2026-03-08T21:00:00',
-        mandante: faker.company.name(),
-        golsMandante: 2,
-        golsVisitante: 1,
-        visitante: faker.company.name(),
-        status: PartidaStatusEnum.REALIZADA,
+        totalPartidas: 3,
+        totalRealizada: 1,
+        totalPendente: 2,
       },
-      {
-        grupo: 'GRUPO 2',
-        dataHora: '2026-03-10T21:00:00',
-        mandante: faker.company.name(),
-        golsMandante: null,
-        golsVisitante: null,
-        visitante: faker.company.name(),
-        status: PartidaStatusEnum.AGENDADA,
-      },
-      {
-        grupo: 'GRUPO 2',
-        dataHora: null,
-        mandante: faker.company.name(),
-        golsMandante: null,
-        golsVisitante: null,
-        visitante: faker.company.name(),
-        status: PartidaStatusEnum.NAO_AGENDADA,
-      },
-    ]);
+    );
 
     TestBed.configureTestingModule({
       imports: [PartidasListagemComponent],
@@ -226,13 +205,18 @@ describe(PartidasListagemComponent.name, () => {
     const payload = createResponsePayload();
     const serviceMock: Pick<
       PartidaService,
-      'getPartidasPendentes' | 'getPartidasRealizadas'
+      'getPartidasPendentes' | 'getPartidasRealizadas' | 'getPartidasTotais'
     > = {
       getPartidasPendentes: vi
         .fn()
         .mockReturnValueOnce(throwError(() => new Error('falha de rede')))
         .mockReturnValueOnce(of(payload)),
       getPartidasRealizadas: vi.fn().mockReturnValue(of(payload)),
+      getPartidasTotais: vi.fn().mockReturnValue(of({
+        totalPartidas: 1,
+        totalRealizada: 1,
+        totalPendente: 0,
+      })),
     };
 
     TestBed.configureTestingModule({
@@ -261,10 +245,24 @@ describe(PartidasListagemComponent.name, () => {
 
 function createServiceMock(
   payload?: GetPartidasDto[],
-): Pick<PartidaService, 'getPartidasPendentes' | 'getPartidasRealizadas'> {
+  totais?: GetPartidasTotaisDto,
+): Pick<PartidaService, 'getPartidasPendentes' | 'getPartidasRealizadas' | 'getPartidasTotais'> {
+  const payloadPartidas = payload ?? createResponsePayload();
+
+  const payloadTotais = totais ?? {
+    totalPartidas: payloadPartidas.length,
+    totalRealizada: payloadPartidas.filter(
+      (partida) => partida.status === PartidaStatusEnum.REALIZADA,
+    ).length,
+    totalPendente: payloadPartidas.filter(
+      (partida) => partida.status !== PartidaStatusEnum.REALIZADA,
+    ).length,
+  };
+
   return {
-    getPartidasPendentes: vi.fn().mockReturnValue(of(payload ?? createResponsePayload())),
-    getPartidasRealizadas: vi.fn().mockReturnValue(of(payload ?? createResponsePayload())),
+    getPartidasPendentes: vi.fn().mockReturnValue(of(payloadPartidas)),
+    getPartidasRealizadas: vi.fn().mockReturnValue(of(payloadPartidas)),
+    getPartidasTotais: vi.fn().mockReturnValue(of(payloadTotais)),
   };
 }
 

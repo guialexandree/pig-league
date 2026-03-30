@@ -1,5 +1,5 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
-import { PartidaGrupoEnum, PartidaStatusEnum } from '../../../data/partida/dto';
+import { Component, OnInit, inject } from '@angular/core';
+import { PartidaGrupoEnum } from '../../../data/partida/dto';
 import { ListagemHeaderComponent } from '../../shared/components/listagem-header/listagem-header.component';
 import { PartidasPendentesComponent } from './partidas-pendentes/partidas-pendentes.component';
 import { PartidasProximasComponent } from './proximas-partidas/partidas-proximas.component';
@@ -34,23 +34,6 @@ export class PartidasListagemComponent implements OnInit {
     { label: 'Grupo 1', value: PartidaGrupoEnum.GRUPO_1, testId: 'filter-group-1' },
     { label: 'Grupo 2', value: PartidaGrupoEnum.GRUPO_2, testId: 'filter-group-2' },
   ];
-
-  readonly totalizadores = computed(() => {
-    const partidas = this.service.partidas();
-    const totalPartidas = partidas.length;
-    const totalRealizadas = partidas.filter(
-      (partida) => partida.status === PartidaStatusEnum.REALIZADA,
-    ).length;
-    const totalPendentes = partidas.filter((partida) =>
-      [PartidaStatusEnum.AGENDADA, PartidaStatusEnum.NAO_AGENDADA].includes(partida.status),
-    ).length;
-
-    return {
-      totalPartidas,
-      totalRealizadas,
-      totalPendentes,
-    };
-  });
 
   ngOnInit(): void {
     this.service.carregarDados();

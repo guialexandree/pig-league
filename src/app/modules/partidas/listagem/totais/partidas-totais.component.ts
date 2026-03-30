@@ -1,4 +1,5 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { PartidasTotaisService } from './partidas-totais.service';
 
 @Component({
   selector: 'app-partidas-totais',
@@ -6,10 +7,10 @@ import { Component, computed, input } from '@angular/core';
   templateUrl: './partidas-totais.component.html',
   styleUrl: './partidas-totais.component.scss',
 })
-export class PartidasTotaisComponent {
-  readonly totalPartidas = input<number>(0);
-  readonly totalRealizadas = input<number>(0);
-  readonly totalPendentes = input<number>(0);
+export class PartidasTotaisComponent implements OnInit {
+  readonly dataService = inject(PartidasTotaisService);
 
-  pendente = computed(() => this.totalPartidas() - this.totalRealizadas());
+  ngOnInit(): void {
+    this.dataService.carregar();
+  }
 }

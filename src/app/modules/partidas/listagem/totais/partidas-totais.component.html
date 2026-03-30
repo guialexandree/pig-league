@@ -2,21 +2,27 @@
   <article class="totais__item totais__item--done">
     <span class="totais__label">Total de partidas (fase de grupo)</span>
     <div class="totais__window">
-      <strong class="totais__value" data-testid="totais-total-partidas">{{ totalPartidas() }}</strong>
+      <strong class="totais__value" data-testid="totais-total-partidas">
+        {{ dataService.totais().totalPartidas }}
+      </strong>
     </div>
   </article>
 
   <article class="totais__item totais__item--done">
     <span class="totais__label">Total realizadas</span>
     <div class="totais__window">
-      <strong class="totais__value" data-testid="totais-total-realizadas">{{ totalRealizadas() }}</strong>
+      <strong class="totais__value" data-testid="totais-total-realizadas">
+        {{ dataService.totais().totalRealizada }}
+      </strong>
     </div>
   </article>
 
   <article class="totais__item totais__item--pending">
     <span class="totais__label">Total pendente</span>
     <div class="totais__window">
-      <strong class="totais__value" data-testid="totais-total-pendente">{{ pendente() }}</strong>
+      <strong class="totais__value" data-testid="totais-total-pendente">
+        {{ dataService.totais().totalPendente }}
+      </strong>
     </div>
   </article>
 </section>
