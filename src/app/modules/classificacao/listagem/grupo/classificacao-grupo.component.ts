@@ -1,11 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ClassificacaoStatusFaseEnum } from '../../../../data/classificacao/dto/classificacao-status-fase.enum';
 import { GetClassificacaoDto } from '../../../../data/classificacao/dto/get-classificacao.dto';
+import { NomePlayerPipe } from '../../../shared/pipes/nome-player/nome-player.pipe';
 import { ClassificacaoFaseAtual } from '../classificacao-fase-atual.type';
 
 @Component({
   selector: 'app-classificacao-grupo',
   standalone: true,
+  imports: [NomePlayerPipe],
   templateUrl: './classificacao-grupo.component.html',
   styleUrl: './classificacao-grupo.component.scss',
 })

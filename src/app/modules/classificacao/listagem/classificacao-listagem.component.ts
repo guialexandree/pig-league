@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ListagemHeaderComponent } from '../../shared/components/listagem-header/listagem-header.component';
 import { ScreenLoaderComponent } from '../../shared/components/screen-loader/screen-loader.component';
-import { ClassificacaoFaseStepComponent } from './fase-step/classificacao-fase-step.component';
 import { ClassificacaoGrupoComponent } from './grupo/classificacao-grupo.component';
 import { ClassificacaoListagemService } from './classificacao-listagem.service';
 
@@ -11,7 +10,6 @@ import { ClassificacaoListagemService } from './classificacao-listagem.service';
   imports: [
     ListagemHeaderComponent,
     ScreenLoaderComponent,
-    ClassificacaoFaseStepComponent,
     ClassificacaoGrupoComponent,
   ],
   templateUrl: './classificacao-listagem.component.html',

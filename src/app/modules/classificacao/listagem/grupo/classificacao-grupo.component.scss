@@ -44,7 +44,7 @@
 
 .classification-card__head {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) repeat(6, 80px);
+  grid-template-columns: 96px minmax(0, 1fr) repeat(6, 58px);
   gap: 0.8rem;
   padding: 0.85rem 1rem;
   color: rgb(214 219 228 / 60%);
@@ -110,7 +110,7 @@
 .classification-row {
   position: relative;
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) repeat(6, 80px);
+  grid-template-columns: 58px minmax(0, 1fr) repeat(6, 58px);
   gap: 0.8rem;
   align-items: center;
   border-radius: 0.72rem;

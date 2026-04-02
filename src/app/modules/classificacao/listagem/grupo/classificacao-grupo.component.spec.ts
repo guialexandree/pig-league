@@ -29,6 +29,7 @@ describe(ClassificacaoGrupoComponent.name, () => {
     expect(root.querySelectorAll('.classification-row').length).toBe(1);
     expect(colunasCabecalho).toEqual(['POSICAO', 'TIME', 'V - E - D', 'J', 'GP', 'GC', 'SG', 'P']);
     expect(root.querySelector('[data-testid="phase-status"]')).toBeNull();
+    expect(root.querySelector('.team-name')?.textContent?.trim()).toBe('Joao Silva');
     expect(root.querySelector('[data-testid="record"]')?.textContent?.trim()).toBe('3 - 0 - 0');
     expect(root.querySelector('[data-testid="matches"]')?.textContent?.trim()).toBe('3');
     expect(root.querySelector('[data-testid="points"]')?.textContent?.trim()).toBe('9');
@@ -91,7 +92,7 @@ function createPayload(): GetClassificacaoDto[] {
       grupo: 'GRUPO 1',
       posicao: 1,
       statusFase: ClassificacaoStatusFaseEnum.CLASSIFICADO,
-      jogador: faker.person.fullName(),
+      jogador: 'Joao Pedro Silva',
       jogos: 3,
       vitorias: 3,
       empates: 0,

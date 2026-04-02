@@ -6,11 +6,13 @@
     testIdPrefix="matches"
   />
 
-  <section class="container matches-content py-4">
+  <section class="container matches-content pt-4">
     <div class="matches-totals-wrap">
       <app-partidas-totais />
     </div>
 
+  </section>
+  <section class="container-fluid pb-4">
     <div class="matches-completed mt-4">
       <app-partidas-realizadas />
     </div>
@@ -21,21 +23,7 @@
       </div>
     }
 
-    <div class="matches-toolbar mt-5">
-      <div class="matches-toolbar__filters" role="group" aria-label="Filtros de grupo">
-        @for (filtro of filtros; track filtro.value) {
-          <button
-            type="button"
-            class="btn matches-toolbar__filter"
-            [class.is-active]="isFiltroAtivo(filtro.value)"
-            (click)="selecionarFiltro(filtro.value)"
-            [attr.data-testid]="filtro.testId"
-          >
-            {{ filtro.label }}
-          </button>
-        }
-      </div>
-    </div>
+
 
     @if (service.erro(); as mensagemErro) {
       <div
@@ -63,10 +51,28 @@
         Nenhuma partida encontrada para este filtro.
       </div>
     } @else {
-      <app-partidas-pendentes
-        [partidas]="service.partidas()"
-        [isLoading]="service.carregando()"
-      />
+      <section class="container">
+        <div class="matches-toolbar mt-5">
+          <div class="matches-toolbar__filters" role="group" aria-label="Filtros de grupo">
+            @for (filtro of filtros; track filtro.value) {
+              <button
+                type="button"
+                class="btn matches-toolbar__filter"
+                [class.is-active]="isFiltroAtivo(filtro.value)"
+                (click)="selecionarFiltro(filtro.value)"
+                [attr.data-testid]="filtro.testId"
+              >
+                {{ filtro.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <app-partidas-pendentes
+          [partidas]="service.partidas()"
+          [isLoading]="service.carregando()"
+        />
+      </section>
     }
   </section>
 </section>

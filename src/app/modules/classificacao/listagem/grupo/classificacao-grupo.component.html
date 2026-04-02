@@ -50,7 +50,7 @@
             <div class="classification-row__team">
               <span class="team-badge">{{ teamTag(item.jogador) }}</span>
               <div class="team-meta">
-                <span class="team-name">{{ item.jogador }}</span>
+                <span class="team-name">{{ item.jogador | nomePlayer }}</span>
                 @if (mostrarStatusFase()) {
                   <span
                     class="team-phase"

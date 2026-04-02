@@ -1,7 +1,7 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { NgbCarousel, NgbCarouselModule, NgbSlideEvent } from '@ng-bootstrap/ng-bootstrap';
-import { format, isValid, parseISO } from 'date-fns';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
+import { NgbCarousel, NgbCarouselModule, NgbSlideEvent, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { GetPartidasRealizadasDto } from '../../../../data/partida/dto';
+import { DateTimeAtPipe, DiaRelativoPipe, NomePlayerPipe } from '../../../shared/pipes';
 import { ScreenLoaderComponent } from '../../../shared/components/screen-loader/screen-loader.component';
 import { PartidasRealizadasService } from './partidas-realizadas.service';
 
@@ -10,16 +10,25 @@ type TeamSide = 'mandante' | 'visitante';
 @Component({
   selector: 'app-partidas-realizadas',
   standalone: true,
-  imports: [NgbCarouselModule, ScreenLoaderComponent],
+  imports: [
+    NgbCarouselModule,
+    NgbTooltipModule,
+    ScreenLoaderComponent,
+    DiaRelativoPipe,
+    DateTimeAtPipe,
+    NomePlayerPipe,
+  ],
   templateUrl: './partidas-realizadas.component.html',
   styleUrl: './partidas-realizadas.component.scss',
 })
 export class PartidasRealizadasComponent implements OnInit {
   readonly dataService = inject(PartidasRealizadasService);
   readonly currentSlideIndex = signal(0);
+  readonly viewportWidth = signal(this.getViewportWidth());
+  readonly cardsPerSlide = computed(() => this.resolveCardsPerSlide(this.viewportWidth()));
 
   readonly slides = computed<GetPartidasRealizadasDto[][]>(() =>
-    this.chunk(this.dataService.partidasRealizadas(), 3),
+    this.chunk(this.dataService.partidasRealizadas(), this.cardsPerSlide()),
   );
   readonly canGoPrev = computed(() => this.normalizedSlideIndex() > 0);
   readonly canGoNext = computed(() => this.normalizedSlideIndex() < this.slides().length - 1);
@@ -33,6 +42,12 @@ export class PartidasRealizadasComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataService.carregar();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.viewportWidth.set(this.getViewportWidth());
+    this.currentSlideIndex.set(this.normalizedSlideIndex());
   }
 
   tentarNovamente(): void {
@@ -59,16 +74,6 @@ export class PartidasRealizadasComponent implements OnInit {
     carousel.next();
   }
 
-  formatarData(dataHora: string | null): string | null {
-    const date = this.parseData(dataHora);
-    return date ? format(date, "dd/MM/yyyy 'às' HH:mm") : null;
-  }
-
-  formatarHorario(dataHora: string | null): string {
-    const date = this.parseData(dataHora);
-    return date ? format(date, 'HH:mm') : '--:--';
-  }
-
   placarMandante(partida: GetPartidasRealizadasDto): string {
     return partida.golsMandante === null ? '--' : String(partida.golsMandante);
   }
@@ -92,8 +97,26 @@ export class PartidasRealizadasComponent implements OnInit {
     return scoreDiff !== null && scoreDiff === 0;
   }
 
+  lineOutcomeLabel(partida: GetPartidasRealizadasDto, side: TeamSide): string {
+    if (this.isDraw(partida)) {
+      return 'EMP';
+    }
+
+    return this.isWinner(partida, side) ? 'VIT' : 'DER';
+  }
+
+  matchOutcomeLabel(partida: GetPartidasRealizadasDto): string {
+    if (this.isDraw(partida)) {
+      return 'Empate confirmado';
+    }
+
+    return this.isWinner(partida, 'mandante')
+      ? `Vitoria: ${partida.mandante}`
+      : `Vitoria: ${partida.visitante}`;
+  }
+
   teamTag(nomeTime: string): string {
-    const letters = nomeTime
+    const letters = this.normalizePlayerName(nomeTime)
       .split(/\s+/)
       .filter((chunk) => chunk.trim().length > 0)
       .slice(0, 2)
@@ -114,15 +137,6 @@ export class PartidasRealizadasComponent implements OnInit {
     }
 
     return groups;
-  }
-
-  private parseData(value: string | null): Date | null {
-    if (!value) {
-      return null;
-    }
-
-    const parsed = parseISO(value);
-    return isValid(parsed) ? parsed : null;
   }
 
   private scoreDiff(partida: GetPartidasRealizadasDto, side: TeamSide): number | null {
@@ -146,5 +160,42 @@ export class PartidasRealizadasComponent implements OnInit {
 
     const slideIndex = Number.parseInt(slideId.slice(slidePrefix.length), 10);
     return Number.isNaN(slideIndex) || slideIndex < 0 ? 0 : slideIndex;
+  }
+
+  private resolveCardsPerSlide(viewportWidth: number): number {
+    if (viewportWidth >= 1400) {
+      return 4;
+    }
+
+    if (viewportWidth >= 1200) {
+      return 3;
+    }
+
+    if (viewportWidth >= 768) {
+      return 2;
+    }
+
+    return 1;
+  }
+
+  private getViewportWidth(): number {
+    return typeof window === 'undefined' ? 1200 : window.innerWidth;
+  }
+
+  private normalizePlayerName(value: string | null | undefined): string {
+    if (!value) {
+      return '';
+    }
+
+    const nameChunks = value
+      .trim()
+      .split(/\s+/)
+      .filter((chunk) => chunk.length > 0);
+
+    if (nameChunks.length <= 1) {
+      return nameChunks[0] ?? '';
+    }
+
+    return `${nameChunks[0]} ${nameChunks[nameChunks.length - 1]}`;
   }
 }

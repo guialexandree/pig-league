@@ -9,8 +9,9 @@
             />
           </svg>
         </span>
-        <h5 class="fw-bold mb-0">PARTIDAS REALIZADAS</h5>
+        <span class="done__title-text">Fase de Grupos</span>
       </h3>
+      <p class="done__subtitle">Painel com resultados das partidas na Fase de Grupos.</p>
     </div>
   </header>
 
@@ -65,17 +66,23 @@
           <ng-template ngbSlide [id]="'done-slide-' + $index">
             <div class="row g-3 done__slide">
               @for (partida of slide; track partida.mandante + partida.visitante + $index) {
-                <div class="col-12 col-md-6 col-xl-4">
+                <div class="col-12 col-md-6 col-xl-4 col-xxl-3">
                   <article class="card done-card" data-testid="done-card">
+                    <div class="card-header">
+                      <div class="d-flex align-items-center ">
+                        <img src="/assets/img/controle.png" height="32" alt="controle xbox" />
+                        @if (partida.dataHora; as dataHora) {
+                          <span
+                            data-testid="done-card-date"
+                            [ngbTooltip]="dataHora | dateTimeAt"
+                            placement="top"
+                            container="body"
+                          >{{ dataHora | diaRelativo }}</span>
+                        }
+                      </div>
+                    </div>
                     <div class="card-body done-card__body">
                       <div class="done-card__matchup">
-                        <div class="d-flex align-items-center justify-content-between">
-                          <img src="/assets/img/controle.png" height="32" alt="controle xbox" />
-                          @if (formatarData(partida.dataHora); as dataFormatada) {
-                            <span data-testid="done-card-date">{{ dataFormatada }}</span>
-                          }
-                        </div>
-
                         <div
                           class="done-card__line"
                           [class.done-card__line--winner]="isWinner(partida, 'mandante')"
@@ -84,7 +91,7 @@
                         >
                           <div class="done-card__player">
                             <span class="done-card__tag">{{ teamTag(partida.mandante) }}</span>
-                            <span class="done-card__name">{{ partida.mandante }}</span>
+                            <span class="done-card__name">{{ partida.mandante | nomePlayer }}</span>
                           </div>
                           <span
                             class="done-card__line-score"
@@ -93,6 +100,14 @@
                             [class.done-card__line-score--draw]="isDraw(partida)"
                           >
                             {{ placarMandante(partida) }}
+                          </span>
+                          <span
+                            class="done-card__result-flag"
+                            [class.done-card__result-flag--winner]="isWinner(partida, 'mandante')"
+                            [class.done-card__result-flag--loser]="isLoser(partida, 'mandante')"
+                            [class.done-card__result-flag--draw]="isDraw(partida)"
+                          >
+                            {{ lineOutcomeLabel(partida, 'mandante') }}
                           </span>
                         </div>
 
@@ -104,7 +119,7 @@
                         >
                           <div class="done-card__player">
                             <span class="done-card__tag">{{ teamTag(partida.visitante) }}</span>
-                            <span class="done-card__name">{{ partida.visitante }}</span>
+                            <span class="done-card__name">{{ partida.visitante | nomePlayer }}</span>
                           </div>
                           <span
                             class="done-card__line-score"
@@ -113,6 +128,14 @@
                             [class.done-card__line-score--draw]="isDraw(partida)"
                           >
                             {{ placarVisitante(partida) }}
+                          </span>
+                          <span
+                            class="done-card__result-flag"
+                            [class.done-card__result-flag--winner]="isWinner(partida, 'visitante')"
+                            [class.done-card__result-flag--loser]="isLoser(partida, 'visitante')"
+                            [class.done-card__result-flag--draw]="isDraw(partida)"
+                          >
+                            {{ lineOutcomeLabel(partida, 'visitante') }}
                           </span>
                         </div>
                       </div>

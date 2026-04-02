@@ -9,6 +9,13 @@ import { PartidasRealizadasService } from './partidas-realizadas.service';
 describe(PartidasRealizadasComponent.name, () => {
   beforeEach(() => {
     faker.seed(20260325);
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 2, 27, 12, 0, 0));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    setViewportWidth(1024);
   });
 
   it('deve delegar carga inicial para o PartidasRealizadasService', () => {
@@ -45,10 +52,84 @@ describe(PartidasRealizadasComponent.name, () => {
     expect(root.querySelectorAll('[data-testid="done-card"]').length).toBe(2);
   });
 
+  it('deve exibir apenas primeiro e ultimo nome dos jogadores no card', () => {
+    const serviceMock = createServiceMock([
+      generateGetPartidasRealizadasDto({
+        mandante: '  Ronaldo   Nazario  de  Lima ',
+        visitante: 'Ada Lovelace',
+      }),
+    ]);
+
+    TestBed.configureTestingModule({
+      imports: [PartidasRealizadasComponent],
+      providers: [{ provide: PartidasRealizadasService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(PartidasRealizadasComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const playerNames = Array.from(root.querySelectorAll('.done-card__name')).map((element) =>
+      element.textContent?.trim(),
+    );
+
+    expect(playerNames).toEqual(['Ronaldo Lima', 'Ada Lovelace']);
+  });
+
+  it('deve exibir 4 itens por slide em monitor grande', () => {
+    setViewportWidth(1600);
+    const serviceMock = createServiceMock([
+      generateGetPartidasRealizadasDto(),
+      generateGetPartidasRealizadasDto(),
+      generateGetPartidasRealizadasDto(),
+      generateGetPartidasRealizadasDto(),
+      generateGetPartidasRealizadasDto(),
+    ]);
+
+    TestBed.configureTestingModule({
+      imports: [PartidasRealizadasComponent],
+      providers: [{ provide: PartidasRealizadasService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(PartidasRealizadasComponent);
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+
+    expect(component.slides()).toHaveLength(2);
+    expect(component.slides()[0]).toHaveLength(4);
+    expect(component.slides()[1]).toHaveLength(1);
+  });
+
+  it('deve exibir nome do visitante no card em viewport mobile', () => {
+    setViewportWidth(360);
+    const serviceMock = createServiceMock([
+      generateGetPartidasRealizadasDto({
+        mandante: 'Gabriel Teles',
+        visitante: 'Matheus Smek',
+      }),
+    ]);
+
+    TestBed.configureTestingModule({
+      imports: [PartidasRealizadasComponent],
+      providers: [{ provide: PartidasRealizadasService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(PartidasRealizadasComponent);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const playerNames = Array.from(root.querySelectorAll('.done-card__name')).map((element) =>
+      element.textContent?.trim(),
+    );
+
+    expect(playerNames).toContain('Matheus Smek');
+  });
+
   it('deve exibir data e horario da partida formatados no card', () => {
     const serviceMock = createServiceMock([
       generateGetPartidasRealizadasDto({
-        dataHora: '2026-03-26T00:00:00',
+        dataHora: '2026-03-26T10:15:00',
       }),
     ]);
 
@@ -63,7 +144,7 @@ describe(PartidasRealizadasComponent.name, () => {
     const root = fixture.nativeElement as HTMLElement;
     const dateElement = root.querySelector('[data-testid="done-card-date"]');
 
-    expect(dateElement?.textContent?.trim()).toBe('26/03/2026 às 00:00');
+    expect(dateElement?.textContent?.trim()).toBe('ontem às 10:15');
   });
 
   it('nao deve exibir data quando partida nao tiver dataHora', () => {
@@ -87,7 +168,7 @@ describe(PartidasRealizadasComponent.name, () => {
     expect(dateElement).toBeNull();
   });
 
-  it('deve derivar titulo final a partir do input', () => {
+  it('deve exibir o titulo padrao do card', () => {
     const serviceMock = createServiceMock();
 
     TestBed.configureTestingModule({
@@ -96,15 +177,12 @@ describe(PartidasRealizadasComponent.name, () => {
     });
 
     const fixture = TestBed.createComponent(PartidasRealizadasComponent);
-    fixture.componentRef.setInput('titulo', '  /partidas-realizadas  ');
     fixture.detectChanges();
 
-    const component = fixture.componentInstance;
     const root = fixture.nativeElement as HTMLElement;
 
-    expect(component.tituloFinal()).toBe('/partidas-realizadas');
     expect(root.querySelector('[data-testid="done-title"]')?.textContent?.trim()).toBe(
-      '/partidas-realizadas',
+      'Partidas Realizadas',
     );
   });
 
@@ -127,6 +205,20 @@ describe(PartidasRealizadasComponent.name, () => {
 
     expect(serviceMock.tentarNovamente).toHaveBeenCalledTimes(1);
   });
+
+  it('deve gerar teamTag com iniciais do primeiro e ultimo nome', () => {
+    const serviceMock = createServiceMock();
+
+    TestBed.configureTestingModule({
+      imports: [PartidasRealizadasComponent],
+      providers: [{ provide: PartidasRealizadasService, useValue: serviceMock }],
+    });
+
+    const fixture = TestBed.createComponent(PartidasRealizadasComponent);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.teamTag('Ronaldo Nazario de Lima')).toBe('RL');
+  });
 });
 
 function createServiceMock(payload: GetPartidasRealizadasDto[] = [generateGetPartidasRealizadasDto()]) {
@@ -144,4 +236,12 @@ function createServiceMock(payload: GetPartidasRealizadasDto[] = [generateGetPar
     PartidasRealizadasService,
     'carregar' | 'tentarNovamente' | 'carregando' | 'erro' | 'partidasRealizadas'
   >;
+}
+
+function setViewportWidth(width: number): void {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    writable: true,
+    value: width,
+  });
 }
